@@ -1,7 +1,6 @@
 ﻿namespace MusicServices.Models;
 
-public class PlaylistRequest
+public class OwnTracksRequest
 {
     public string Login { get; init; }
-    public int PlaylistId { get; init; }
 }

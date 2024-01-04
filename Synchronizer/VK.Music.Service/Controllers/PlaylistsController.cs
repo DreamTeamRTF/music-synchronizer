@@ -16,9 +16,9 @@ public class PlaylistsController : ControllerBase
 
     [HttpGet]
     [Route("vk/music/my/playlists")]
-    public async Task<ActionResult<Playlist[]>> Get()
+    public async Task<ActionResult<Playlist[]>> Get([FromQuery] OwnTracksRequest ownTracksRequest)
     {
-        var playlists = await vkMusicService.GetOwnPlaylistsAsync().ConfigureAwait(false);
+        var playlists = await vkMusicService.GetOwnPlaylistsAsync(ownTracksRequest).ConfigureAwait(false);
         return Ok(playlists);
     }
 }

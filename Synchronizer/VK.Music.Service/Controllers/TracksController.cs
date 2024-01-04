@@ -16,10 +16,10 @@ public class TracksController : ControllerBase
 
     [HttpGet]
     [Route("vk/music/tracks")]
-    public async Task<ActionResult<Track[]>> GetTracksFromPlaylist([FromQuery] int playlistId)
+    public async Task<ActionResult<Track[]>> GetTracksFromPlaylist([FromQuery] PlaylistRequest playlistRequest)
     {
         return await vkMusicService
-            .GetPlaylistTracks(new PlaylistRequest { PlaylistId = playlistId })
+            .GetPlaylistTracksAsync(playlistRequest)
             .ConfigureAwait(false);
     }
 }

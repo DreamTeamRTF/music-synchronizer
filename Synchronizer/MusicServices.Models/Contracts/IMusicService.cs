@@ -8,10 +8,10 @@ public interface IMusicService
     /// <summary>
     /// Метод для получения всех треков из плейлиста
     /// </summary>
-    public Task<Track[]> GetPlaylistTracks(PlaylistRequest request);
+    public Task<Track[]> GetPlaylistTracksAsync(PlaylistRequest request);
 
     /// <summary>
     /// Метод для получения всех плейлистов созданых пользователем
     /// </summary>
-    public Task<Playlist[]> GetOwnPlaylistsAsync();
+    public Task<Playlist[]> GetOwnPlaylistsAsync(OwnTracksRequest request);
 }

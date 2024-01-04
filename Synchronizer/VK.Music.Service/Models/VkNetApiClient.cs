@@ -12,7 +12,7 @@ public class VkNetApiClient : IVkNetApiClient
         this.vkNetClientsRepository = vkNetClientsRepository;
     }
 
-    public async Task<Audio[]> GetTrackAsync(string login, int playlistId)
+    public async Task<Audio[]> GetTracksFromPlaylist(string login, int playlistId)
     {
         var api = await vkNetClientsRepository.GetAuthenticatedVkNetApiAsync(login);
         var audios = await api.Audio
@@ -30,7 +30,7 @@ public class VkNetApiClient : IVkNetApiClient
         var playlists = await api.Audio
             .GetPlaylistsAsync(api.UserId!.Value, 100)
             .ConfigureAwait(false);
-        
+
         var ownPlaylists = playlists.Where(p => p.Original == null || p.Original.OwnerId == api.UserId);
         if (ownPlaylists is null) throw new TrackNotFoundException();
         return ownPlaylists.ToArray();

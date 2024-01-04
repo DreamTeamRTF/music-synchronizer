@@ -20,5 +20,4 @@ public class AuthController : ControllerBase
         await authService.CreateAuthSessionAsync(loginModel.Login, loginModel.Password);
         return Ok();
     }
-
 }
