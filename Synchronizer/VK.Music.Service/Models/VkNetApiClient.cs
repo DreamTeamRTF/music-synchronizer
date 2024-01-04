@@ -12,7 +12,7 @@ public class VkNetApiClient : IVkNetApiClient
         this.vkNetClientsRepository = vkNetClientsRepository;
     }
 
-    public async Task<Audio[]> GetTracksFromPlaylist(string login, int playlistId)
+    public async Task<Audio[]> GetTracksFromPlaylistAsync(string login, int playlistId)
     {
         var api = await vkNetClientsRepository.GetAuthenticatedVkNetApiAsync(login);
         var audios = await api.Audio

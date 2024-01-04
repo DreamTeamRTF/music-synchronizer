@@ -1,8 +1,9 @@
 ﻿using System.Text.Json.Serialization;
 
 namespace MusicServices.Models;
+
 /// <summary>
-/// Моедль трека для всех клиентов, мб будет расширяться
+///     Моедль трека для всех клиентов, мб будет расширяться
 /// </summary>
 public class Track
 {

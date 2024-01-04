@@ -1,8 +1,9 @@
 ﻿using System.Text.Json.Serialization;
 
 namespace MusicServices.Models;
+
 /// <summary>
-/// Модель плейлиста для всех сервисов будет расширяться
+///     Модель плейлиста для всех сервисов будет расширяться
 /// </summary>
 public class Playlist
 {

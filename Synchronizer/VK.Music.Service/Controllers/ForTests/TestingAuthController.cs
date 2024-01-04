@@ -12,8 +12,8 @@ public class TestingAuthController : ControllerBase
 {
     private readonly IVkNetApiAuthService authService;
     private readonly VkServiceConfig config;
-    private readonly ITwoFactorVkProvider twoFactorVkProvider;
     private readonly VkApiFactory factory;
+    private readonly ITwoFactorVkProvider twoFactorVkProvider;
 
     public TestingAuthController(
         VkServiceConfig config,
