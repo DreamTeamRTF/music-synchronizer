@@ -1,0 +1,29 @@
+﻿@model Synchronizer.Core.DTO.UserCredentialsDto
+
+@{
+    ViewBag.Title = "Форма пользователя";
+    Layout = "_Layout";
+}
+
+<h2>Форма</h2>
+<form asp-action="Register" method="post">
+    <div asp-validation-summary="All"></div>
+    <p>
+        <label asp-for="Username">Юзернейм</label>
+        <input asp-for="Username"/>
+    </p>
+    <p>
+        <label asp-for="Email">Email</label>
+        <input asp-for="Email"/>
+    </p>
+    <p>
+        <label asp-for="Password">Пароль</label>
+        <input asp-for="Password"/>
+    </p>
+    <p>
+        <label asp-for="PasswordConfirm">Подтверждение пароля</label>
+        <input asp-for="PasswordConfirm"/>
+    </p>
+
+    <button type="submit">Отправить</button>
+</form>

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MusicServices.Models;
 using VK.Music.Service.Configuration;
 using VK.Music.Service.Models;
 using VK.Music.Service.Models.Auth;
@@ -51,7 +52,7 @@ public class TestingAuthController : ControllerBase
             Login = loginModel.Login,
             Password = loginModel.Password,
             Settings = Settings.Audio,
-            TwoFactorAuthorization = twoFactorVkProvider.GetAuthCode,
+            TwoFactorAuthorization = () => twoFactorVkProvider.GetAuthCode(loginModel.Username),
             TwoFactorSupported = true
         });
         var model = new AuthorizationParameters { Token = vkNet.Token, UserId = vkNet.UserId!.Value };

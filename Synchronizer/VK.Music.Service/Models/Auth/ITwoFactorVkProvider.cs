@@ -3,5 +3,5 @@
 public interface ITwoFactorVkProvider
 {
     public Task<string> GetAuthCodeAsync();
-    public string GetAuthCode();
+    public string GetAuthCode(string username);
 }

@@ -7,10 +7,10 @@ namespace MusicServices.Models;
 /// </summary>
 public class Playlist
 {
-    public Playlist(long id, string title, string author, Track[]? tracks)
+    public Playlist(long id, string title, string imageUrl, Track[]? tracks)
     {
         Title = title;
-        Author = author;
+        ImageUrl = imageUrl;
         Tracks = tracks;
         Id = id;
     }
@@ -19,7 +19,7 @@ public class Playlist
 
     [JsonPropertyName("title")] public string Title { get; private set; }
 
-    [JsonPropertyName("author")] public string Author { get; private set; }
+    [JsonPropertyName("imageUrl")] public string ImageUrl { get; private set; }
 
     [JsonPropertyName("tracks")] public Track[]? Tracks { get; private set; }
 }

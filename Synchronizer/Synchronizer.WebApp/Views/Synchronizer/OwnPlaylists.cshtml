@@ -1,0 +1,18 @@
+﻿@model MusicServices.Models.Playlist[]
+
+@{
+    ViewBag.Title = "Плейлисты";
+    Layout = "_Layout";
+}
+
+<h2>Плейлисты</h2>
+<ul>
+    @foreach (var playlist in Model)
+    {
+        <li>
+            <p>@playlist.Title</p>
+            <img src="@playlist.ImageUrl" alt="Картинка плейлиста"/>
+            <button asp-controller="Synchronizer" asp-action="">Sync with YandexMusic</button>
+        </li>
+    }
+</ul>

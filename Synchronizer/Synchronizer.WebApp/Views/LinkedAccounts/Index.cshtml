@@ -1,0 +1,37 @@
+﻿@model Synchronizer.WebApp.Models.Synchronizer.LinkedAccounts.LinkedAccountsViewModel
+
+@{
+    ViewBag.Title = "Synchronized accounts";
+    Layout = "_Layout";
+}
+
+<h2>Accounts</h2>
+<ul>
+    <li>
+        <img alt="yandex logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Yandex_Music_icon.svg/2048px-Yandex_Music_icon.svg.png" width="40px" height="40px"/>
+        @if (Model.YandexAccount is not null)
+        {
+            <p>Yandex</p>
+            <p>@Model.YandexAccount.Name ?? "Yandex Name"</p>
+            <img alt="" src="@Model.YandexAccount.ImageUrl"/>
+        }
+        else
+        {
+            <button>Добавить аккаунт Я.Музыки</button>
+        }
+    </li>
+    <li>
+        <img alt="vk logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/VK_Music_Full_Logo.svg/1280px-VK_Music_Full_Logo.svg.png" height="40px" width="140px"/>
+        @if (Model.VkAccount is not null)
+        {
+            <p>ВКонтакте</p>
+            <p>@Model.VkAccount.Name ?? "VkName Name"</p>
+            <img alt="" src="@Model.VkAccount.ImageUrl"/>
+        }
+
+        else
+        {
+            <button>Добавить аккаунт Я.Музыки</button>
+        }
+    </li>
+</ul>

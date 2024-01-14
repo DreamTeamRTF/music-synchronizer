@@ -1,0 +1,20 @@
+﻿@model Synchronizer.Core.DTO.UserLoginDto
+
+@{
+    ViewBag.Title = "Login";
+    Layout = "_Layout";
+}
+
+<h2>@ViewBag.Title</h2>
+<form asp-action="Login" method="post">
+    <div asp-validation-summary="All"></div>
+    <p>
+        <label asp-for="Username">Юзернейм</label>
+        <input asp-for="Username"/>
+    </p>
+    <p>
+        <label asp-for="Password">Пароль</label>
+        <input asp-for="Password"/>
+    </p>
+    <button type="submit">Отправить</button>
+</form>

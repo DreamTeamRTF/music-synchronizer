@@ -7,14 +7,14 @@ using VkNet.Model;
 
 namespace VK.Music.Service.Models.Auth;
 
-public class VkNetAuthService : IVkNetApiAuthService
+public class InMemoryVkNetAuthService : IVkNetApiAuthService
 {
     private readonly ConcurrentDictionary<string, AuthorizationParameters> authorizedSessions = new();
     private readonly ITwoFactorVkProvider twoFactorProvider;
     private readonly VkApiFactory vkApiFactory;
     private readonly VkServiceConfig vkServiceConfig;
 
-    public VkNetAuthService(ITwoFactorVkProvider twoFactorProvider, VkServiceConfig vkServiceConfig,
+    public InMemoryVkNetAuthService(ITwoFactorVkProvider twoFactorProvider, VkServiceConfig vkServiceConfig,
         VkApiFactory vkApiFactory)
     {
         this.twoFactorProvider = twoFactorProvider;
@@ -22,10 +22,14 @@ public class VkNetAuthService : IVkNetApiAuthService
         this.vkApiFactory = vkApiFactory;
     }
 
-    public async Task CreateAuthSessionAsync(string login, string password)
+    public async Task CreateAuthSessionAsync(string username, string login, string password, string? code)
     {
         var vkNet = vkApiFactory.CreateApiClient();
-        if (authorizedSessions.ContainsKey(login)) throw new ArgumentException();
+        if (authorizedSessions.ContainsKey(username)) throw new ArgumentException();
+        if (code != null)
+        {
+            TwoFactorRequiredUsers.RequiredSecondFactor.TryAdd(username, code);
+        }
 
         await vkNet.AuthorizeAsync(new ApiAuthParams
         {
@@ -33,40 +37,41 @@ public class VkNetAuthService : IVkNetApiAuthService
             Password = password,
             ApplicationId = vkServiceConfig.ApplicationId,
             Settings = Settings.Audio,
-            TwoFactorAuthorization = twoFactorProvider.GetAuthCode,
+            TwoFactorAuthorization = () => twoFactorProvider.GetAuthCode(username),
             TwoFactorSupported = true
         });
 
-        authorizedSessions.TryAdd(login,
+        authorizedSessions.TryAdd(username,
             new AuthorizationParameters { Token = vkNet.Token, UserId = vkNet.UserId!.Value });
     }
 
-    public async Task<VkApi> AuthAsync(VkApi api, string login)
+    public async Task<VkApi> AuthAsync(VkApi api, string username)
     {
-        if (authorizedSessions.TryGetValue(login, out var authParams))
+        if (authorizedSessions.TryGetValue(username, out var authParams))
         {
             try
             {
                 await api.AuthorizeAsync(new ApiAuthParams
                 {
                     AccessToken = authParams.Token,
-                    UserId = authParams.UserId
+                    UserId = authParams.UserId,
+                    ApplicationId = vkServiceConfig.ApplicationId
                 });
             }
             catch (Exception e)
             {
                 Console.WriteLine($"Сессия протухла для пользователя {authParams.UserId} with exception {e}");
-                authorizedSessions.Remove(login, out _);
+                authorizedSessions.TryRemove(username, out _);
             }
 
             if (api.IsAuthorized) return api;
         }
 
-        throw new AuthApiException("Something went wrong in auth");
+        throw new AuthApiException("Вы не связали vk музыку");
     }
 
-    public void AddTestToken(string login, AuthorizationParameters authParams)
+    public void AddTestToken(string username, AuthorizationParameters authParams)
     {
-        authorizedSessions.TryAdd(login, authParams);
+        authorizedSessions.TryAdd(username, authParams);
     }
 }

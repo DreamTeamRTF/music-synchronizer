@@ -1,0 +1,18 @@
+﻿@model Synchronizer.WebApp.Models.Synchronizer.Playlists.SynchronizedPlaylistsModel
+
+@{
+    ViewBag.Title = "Синхронизированные плейлисты";
+    Layout = "_Layout";
+}
+
+<h2>Синхронизированные плейлисты</h2>
+<ul>
+    @foreach (var playlist in Model.Playlists)
+    {
+        <li>
+            <p>@playlist.Title</p>
+            <p>@playlist.ServiceType.ToString()</p>
+            <img src="@playlist.CoverImage" alt="Картинка плейлиста"/>
+        </li>
+    }
+</ul>

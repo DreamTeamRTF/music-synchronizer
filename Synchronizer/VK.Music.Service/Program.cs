@@ -1,7 +1,7 @@
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
-using VK.Music.Service;
 using VK.Music.Service.Configuration;
+using VK.Music.Service.DI;
 using VkNet.AudioBypassService.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,11 +23,13 @@ builder.Host.ConfigureContainer<ContainerBuilder>(b => b.RegisterModule(new VkSe
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+/*if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+}*/
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 

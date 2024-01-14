@@ -13,7 +13,7 @@ public class ConsoleTwoFactorVkProvider : ITwoFactorVkProvider
         });
     }
 
-    public string GetAuthCode()
+    public string GetAuthCode(string username)
     {
         Console.WriteLine("Введите код");
         var code = Console.ReadLine();

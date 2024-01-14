@@ -3,11 +3,13 @@ using MusicServices.Models.Contracts;
 using VK.Music.Service.Configuration;
 using VK.Music.Service.Helpers;
 using VK.Music.Service.Models;
+using VK.Music.Service.Models.Account;
 using VK.Music.Service.Models.Auth;
+using VK.Music.Service.Models.Music;
 using VkNet.AudioBypassService.Extensions;
 using VkNet.Utils.AntiCaptcha;
 
-namespace VK.Music.Service;
+namespace VK.Music.Service.DI;
 
 public class VkServiceModule : Module
 {
@@ -30,7 +32,7 @@ public class VkServiceModule : Module
             .As<VkServiceConfig>()
             .SingleInstance();
 
-        containerBuilder.Register(cc => new ConsoleTwoFactorVkProvider())
+        containerBuilder.Register(cc => new DefaultTwoFactorProvider())
             .As<ITwoFactorVkProvider>()
             .SingleInstance();
 
@@ -43,7 +45,7 @@ public class VkServiceModule : Module
             .As<VkApiFactory>()
             .SingleInstance();
 
-        containerBuilder.Register(cc => new VkNetAuthService(
+        containerBuilder.Register(cc => new InMemoryVkNetAuthService(
                 cc.Resolve<ITwoFactorVkProvider>(),
                 cc.Resolve<VkServiceConfig>(),
                 cc.Resolve<VkApiFactory>()))
@@ -59,6 +61,11 @@ public class VkServiceModule : Module
         containerBuilder
             .Register(cc => new VkNetApiClient(cc.Resolve<IVkNetClientsRepository>()))
             .As<IVkNetApiClient>()
+            .SingleInstance();
+
+        containerBuilder
+            .Register(cc => new VkAccountService(cc.Resolve<IVkNetApiClient>()))
+            .As<IVkAccountService>()
             .SingleInstance();
 
         containerBuilder

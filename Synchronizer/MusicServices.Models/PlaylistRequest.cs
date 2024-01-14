@@ -2,6 +2,6 @@
 
 public class PlaylistRequest
 {
-    public string Login { get; init; }
+    public string Username { get; init; }
     public int PlaylistId { get; init; }
 }
