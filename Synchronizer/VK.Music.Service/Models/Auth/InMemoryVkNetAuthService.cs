@@ -26,10 +26,7 @@ public class InMemoryVkNetAuthService : IVkNetApiAuthService
     {
         var vkNet = vkApiFactory.CreateApiClient();
         if (authorizedSessions.ContainsKey(username)) throw new ArgumentException();
-        if (code != null)
-        {
-            TwoFactorRequiredUsers.RequiredSecondFactor.TryAdd(username, code);
-        }
+        if (code != null) TwoFactorRequiredUsers.RequiredSecondFactor.TryAdd(username, code);
 
         await vkNet.AuthorizeAsync(new ApiAuthParams
         {

@@ -11,11 +11,12 @@ namespace Synchronizer.WebApp.Controllers;
 [Authorize]
 public class SynchronizerController : Controller
 {
+    private readonly ILogger<SynchronizerController> logger;
     private readonly VkMusicClient vkMusicClient;
     private readonly YandexMusicClient yandexMusicClient;
-    private readonly ILogger<SynchronizerController> logger;
 
-    public SynchronizerController(VkMusicClient vkMusicClient, YandexMusicClient yandexMusicClient, ILogger<SynchronizerController> logger)
+    public SynchronizerController(VkMusicClient vkMusicClient, YandexMusicClient yandexMusicClient,
+        ILogger<SynchronizerController> logger)
     {
         this.vkMusicClient = vkMusicClient;
         this.yandexMusicClient = yandexMusicClient;
@@ -64,7 +65,7 @@ public class SynchronizerController : Controller
 
         return View(playlists);
     }
-    
+
     /*[HttpPost]
     public async Task<IActionResult> SyncPlaylist(MusicServiceTypeModel musicService)
     {

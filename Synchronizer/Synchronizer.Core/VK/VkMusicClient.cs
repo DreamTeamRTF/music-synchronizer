@@ -31,7 +31,8 @@ public class VkMusicClient : IVkMusicClient
     {
         var client = new RestClient(HostUrl);
         var request = new RestRequest($"{VkBaseUrl}/auth");
-        request.AddBody(new LoginModel { Username = username, Login = login, Password = password, SecondFactorCode = code});
+        request.AddBody(new LoginModel
+            { Username = username, Login = login, Password = password, SecondFactorCode = code });
         try
         {
             await client.PostAsync(request);
@@ -51,8 +52,8 @@ public class VkMusicClient : IVkMusicClient
         try
         {
             var response = await client.GetAsync(request);
-            return response.StatusCode == HttpStatusCode.OK 
-                ? JsonSerializer.Deserialize<AccountInfoModel>(response.Content!).AsResult()! 
+            return response.StatusCode == HttpStatusCode.OK
+                ? JsonSerializer.Deserialize<AccountInfoModel>(response.Content!).AsResult()!
                 : Result.Fail<AccountInfoModel>(response.ErrorMessage!);
         }
         catch (HttpRequestException e)

@@ -1,61 +1,59 @@
 ﻿using System.Collections.Concurrent;
-using Yandex.Music.Service.Exceptions;
 using Yandex.Music.Client;
-using Yandex.Music.Service.Configuration;
+using Yandex.Music.Service.Exceptions;
 
-namespace Yandex.Music.Service.Models.Auth
+namespace Yandex.Music.Service.Models.Auth;
+
+public class InMemoryYandexMusicAuthService
 {
-    public class InMemoryYandexMusicAuthService
+    private readonly ConcurrentDictionary<string, AuthorizationParameters> authorizedSessions = new();
+
+    public async Task CreateAuthSessionAsync(string username, string login, string password)
     {
-        private readonly ConcurrentDictionary<string, AuthorizationParameters> authorizedSessions = new();
+        var yandex = YandexApiFactory.CreateApiClient();
+        if (authorizedSessions.ContainsKey(username)) throw new ArgumentException();
 
-        public async Task CreateAuthSessionAsync(string username, string login, string password)
+        await yandex.CreateAuthSession(login);
+        await yandex.AuthorizeByAppPassword(password);
+        var token = await yandex.GetAccessToken();
+
+        authorizedSessions.TryAdd(username,
+            new AuthorizationParameters { Token = token.AccessToken, UserId = yandex.GetLoginInfo()!.Id });
+    }
+
+    public async Task CreateAuthWithTokenAsync(string username, string token)
+    {
+        var yandex = YandexApiFactory.CreateApiClient();
+        if (authorizedSessions.ContainsKey(username)) throw new ArgumentException();
+
+        await yandex.Authorize(token);
+
+        authorizedSessions.TryAdd(username,
+            new AuthorizationParameters { Token = token, UserId = yandex.GetLoginInfo()!.Id });
+    }
+
+    public async Task<YandexMusicClientAsync> AuthAsync(YandexMusicClientAsync api, string username)
+    {
+        if (authorizedSessions.TryGetValue(username, out var authParams))
         {
-            var yandex = YandexApiFactory.CreateApiClient();
-            if (authorizedSessions.ContainsKey(username)) throw new ArgumentException();
-
-            await yandex.CreateAuthSession(login);
-            await yandex.AuthorizeByAppPassword(password);
-            var token = await yandex.GetAccessToken();
-
-            authorizedSessions.TryAdd(username,
-                new AuthorizationParameters {Token = token.AccessToken, UserId = yandex.GetLoginInfo()!.Id});
-        }
-        
-        public async Task CreateAuthWithTokenAsync(string username, string token)
-        {
-            var yandex = YandexApiFactory.CreateApiClient();
-            if (authorizedSessions.ContainsKey(username)) throw new ArgumentException();
-
-            await yandex.Authorize(token);
-
-            authorizedSessions.TryAdd(username,
-                new AuthorizationParameters {Token = token, UserId = yandex.GetLoginInfo()!.Id});
-        }
-
-        public async Task<YandexMusicClientAsync> AuthAsync(YandexMusicClientAsync api, string username)
-        {
-            if (authorizedSessions.TryGetValue(username, out var authParams))
+            try
             {
-                try
-                {
-                    await api.Authorize(authParams.Token);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine($"Сессия протухла для пользователя {authParams.UserId} with exception {e}");
-                    authorizedSessions.Remove(username, out _);
-                }
-
-                if (api.IsAuthorized) return api;
+                await api.Authorize(authParams.Token);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Сессия протухла для пользователя {authParams.UserId} with exception {e}");
+                authorizedSessions.Remove(username, out _);
             }
 
-            throw new AuthApiException("Something went wrong in auth");
+            if (api.IsAuthorized) return api;
         }
 
-        public void AddTestToken(string login, AuthorizationParameters authParams)
-        {
-            authorizedSessions.TryAdd(login, authParams);
-        }
+        throw new AuthApiException("Something went wrong in auth");
+    }
+
+    public void AddTestToken(string login, AuthorizationParameters authParams)
+    {
+        authorizedSessions.TryAdd(login, authParams);
     }
 }
