@@ -20,8 +20,8 @@ namespace Yandex.Music.Service.Helpers
         public static Track FromYandexModel(this YTrack yTrack)
         {
             return new Track(yTrack.Title,
-                yTrack.Artists.First().Name.ToString(),
-                yTrack.Albums is null ? null : yTrack.Albums.First().Title);
+                yTrack.Artists.First().Name,
+                yTrack.Albums?.First().Title);
         }
 
         public static Track FromYandexModel(this YTrackContainer yTrack)

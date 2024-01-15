@@ -7,18 +7,18 @@ namespace Yandex.Music.Service.Controllers
     [ApiController]
     public class TracksController : ControllerBase
     {
-        private readonly IMusicService _yandexMusicService;
+        private readonly IMusicService yandexMusicService;
 
         public TracksController(IMusicService yandexMusicService)
         {
-            _yandexMusicService = yandexMusicService;
+            this.yandexMusicService = yandexMusicService;
         }
 
         [HttpGet]
         [Route("yandex/music/tracks")]
         public async Task<ActionResult<Track[]>> GetTracksFromPlaylist([FromQuery] PlaylistRequest playlistRequest)
         {
-            return await _yandexMusicService
+            return await yandexMusicService
                 .GetPlaylistTracksAsync(playlistRequest)
                 .ConfigureAwait(false);
         }

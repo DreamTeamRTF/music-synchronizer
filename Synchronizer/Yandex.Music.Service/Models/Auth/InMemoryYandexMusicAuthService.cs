@@ -8,29 +8,34 @@ namespace Yandex.Music.Service.Models.Auth
     public class InMemoryYandexMusicAuthService
     {
         private readonly ConcurrentDictionary<string, AuthorizationParameters> authorizedSessions = new();
-        private readonly YandexApiFactory _apiFactory;
-        private readonly YandexServiceConfig _config;
 
-        public InMemoryYandexMusicAuthService(YandexApiFactory apiFactory, YandexServiceConfig config)
+        public async Task CreateAuthSessionAsync(string username, string login, string password)
         {
-            _apiFactory = apiFactory;
-            _config = config;
+            var yandex = YandexApiFactory.CreateApiClient();
+            if (authorizedSessions.ContainsKey(username)) throw new ArgumentException();
+
+            await yandex.CreateAuthSession(login);
+            await yandex.AuthorizeByAppPassword(password);
+            var token = await yandex.GetAccessToken();
+
+            authorizedSessions.TryAdd(username,
+                new AuthorizationParameters {Token = token.AccessToken, UserId = yandex.GetLoginInfo()!.Id});
         }
-
-        public async Task CreateAuthSessionAsync(string login, string token)
+        
+        public async Task CreateAuthWithTokenAsync(string username, string token)
         {
-            var yandex = _apiFactory.CreateApiClient();
-            if (authorizedSessions.ContainsKey(login)) throw new ArgumentException();
+            var yandex = YandexApiFactory.CreateApiClient();
+            if (authorizedSessions.ContainsKey(username)) throw new ArgumentException();
 
             await yandex.Authorize(token);
 
-            authorizedSessions.TryAdd(login,
+            authorizedSessions.TryAdd(username,
                 new AuthorizationParameters {Token = token, UserId = yandex.GetLoginInfo()!.Id});
         }
 
-        public async Task<YandexMusicClientAsync> AuthAsync(YandexMusicClientAsync api, string login)
+        public async Task<YandexMusicClientAsync> AuthAsync(YandexMusicClientAsync api, string username)
         {
-            if (authorizedSessions.TryGetValue(login, out var authParams))
+            if (authorizedSessions.TryGetValue(username, out var authParams))
             {
                 try
                 {
@@ -39,7 +44,7 @@ namespace Yandex.Music.Service.Models.Auth
                 catch (Exception e)
                 {
                     Console.WriteLine($"Сессия протухла для пользователя {authParams.UserId} with exception {e}");
-                    authorizedSessions.Remove(login, out _);
+                    authorizedSessions.Remove(username, out _);
                 }
 
                 if (api.IsAuthorized) return api;

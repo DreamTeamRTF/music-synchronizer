@@ -1,0 +1,20 @@
+﻿@model Synchronizer.Core.DTO.YandexLoginDto
+
+@{
+    ViewBag.Title = "Yandex авторизация";
+    Layout = "_Layout";
+}
+
+<h2>@ViewBag.Title</h2>
+<form asp-action="YandexAccountForm" method="post">
+    <div asp-validation-summary="All"></div>
+    <p>
+        <label asp-for="Login">Логин</label>
+        <input asp-for="Login"/>
+    </p>
+    <p>
+        <label asp-for="Password">Пароль</label>
+        <input asp-for="Password"/>
+    </p>
+    <button type="submit">Отправить</button>
+</form>

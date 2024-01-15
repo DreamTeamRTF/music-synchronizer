@@ -1,19 +1,19 @@
 ﻿using MusicServices.Models;
 
-namespace Yandex.Music.Service.Models.Acount
+namespace Yandex.Music.Service.Models.Account
 {
     public class YandexAccountService
     {
-        private readonly YandexApiClient _apiClient;
+        private readonly YandexApiClient apiClient;
 
         public YandexAccountService(YandexApiClient apiClient)
         {
-            _apiClient = apiClient;
+            this.apiClient = apiClient;
         }
 
         public Task<AccountInfoModel> GetAccountInfoAsync(string username)
         {
-            return _apiClient.GetAccountInfoAsync(username);
+            return apiClient.GetAccountInfoAsync(username);
         }
     }
 }

@@ -9,28 +9,25 @@ namespace Yandex.Music.Service.Controllers.ForTests
     [ApiController]
     public class TestingAuthController : ControllerBase
     {
-        private readonly InMemoryYandexMusicAuthService _authService;
-        private readonly YandexApiFactory _apiFactory;
-        private readonly YandexServiceConfig _config;
+        private readonly InMemoryYandexMusicAuthService authService;
+        private readonly YandexServiceConfig config;
 
         public TestingAuthController(
             YandexServiceConfig config,
-            InMemoryYandexMusicAuthService authService,
-            YandexApiFactory apiFactory)
+            InMemoryYandexMusicAuthService authService)
         {
-            _config = config;
-            _authService = authService;
-            _apiFactory = apiFactory;
+            this.config = config;
+            this.authService = authService;
         }
 
         [HttpPost]
         [Route("test/yandex/music/auth")]
         public ActionResult TestAuth()
         {
-            _authService.AddTestToken(_config.TestLogin, new AuthorizationParameters
+            authService.AddTestToken(config.TestLogin, new AuthorizationParameters
             {
-                Token = _config.TestToken,
-                UserId = _config.TestUserId
+                Token = config.TestToken,
+                UserId = config.TestUserId
             });
 
             return Ok();
@@ -43,7 +40,7 @@ namespace Yandex.Music.Service.Controllers.ForTests
         //Сейчас используй вместо пароля токен 
         public async Task<ActionResult<AuthorizationParameters>> CreateToken(LoginModel loginModel)
         {
-            var yandexApi = _apiFactory.CreateApiClient();
+            var yandexApi = YandexApiFactory.CreateApiClient();
             try
             {
                 await yandexApi.Authorize(loginModel.Password);

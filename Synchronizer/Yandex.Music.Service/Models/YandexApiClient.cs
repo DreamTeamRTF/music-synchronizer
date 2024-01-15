@@ -7,15 +7,15 @@ namespace Yandex.Music.Service.Models
 {
     public class YandexApiClient
     {
-        private readonly YandexClientsRepository _clientRepository;
+        private readonly YandexClientsRepository clientRepository;
 
         public YandexApiClient(YandexClientsRepository clientRepository)
         {
-            _clientRepository = clientRepository;
+            this.clientRepository = clientRepository;
         }
         public async Task<YTrackContainer[]> GetTracksFromPlaylistAsync(string username, int playlistId)
         {
-            var api = await _clientRepository.GetAuthentificatedYandexApi(username);
+            var api = await clientRepository.GetAuthenticatedYandexApi(username);
             var loginInfo = await api.GetLoginInfo().ConfigureAwait(false);
             var playlist = await api.GetPlaylist(loginInfo.Id, playlistId.ToString()).ConfigureAwait(false);
             var tracks = playlist.Tracks;
@@ -27,7 +27,7 @@ namespace Yandex.Music.Service.Models
 
         public async Task<YPlaylist[]> GetOwnPlaylistsAsync(string username)
         {
-            var api = await _clientRepository.GetAuthentificatedYandexApi(username)
+            var api = await clientRepository.GetAuthenticatedYandexApi(username)
                 .ConfigureAwait(false);
             var loginInfo = await api.GetLoginInfo().ConfigureAwait(false);
             var fav = await api.GetFavorites()
@@ -46,16 +46,15 @@ namespace Yandex.Music.Service.Models
 
         public async Task<AccountInfoModel> GetAccountInfoAsync(string username)
         {
-            var client = await _clientRepository.GetAuthentificatedYandexApi(username);
-            var account = client.Account;
+            var client = await clientRepository.GetAuthenticatedYandexApi(username);
             var loginInfo = await client.GetLoginInfo();
             
             var photoUrl = loginInfo.IsAvatarEmpty ? "" : loginInfo.AvatarUrl;
 
             return new AccountInfoModel
             {
-                Name = account.FullName,
-                ImageUrl = photoUrl.ToString()
+                Name = client.Account.FullName,
+                ImageUrl = photoUrl
             };
         }
     }

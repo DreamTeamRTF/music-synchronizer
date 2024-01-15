@@ -1,36 +1,41 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using MusicServices.Models;
-using Yandex.Music.Service.Models.Acount;
 using Yandex.Music.Service.Models.Auth;
 using Yandex.Music.Service.Exceptions;
+using Yandex.Music.Service.Models.Account;
 
 namespace Yandex.Music.Service.Controllers
 {
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly InMemoryYandexMusicAuthService _authService;
-        private readonly YandexAccountService _accountService;
-        private readonly ILogger<AuthController> _logger;
+        private readonly InMemoryYandexMusicAuthService authService;
+        private readonly YandexAccountService accountService;
+        private readonly ILogger<AuthController> logger;
 
-        public AuthController(InMemoryYandexMusicAuthService authService,
+        public AuthController(
+            InMemoryYandexMusicAuthService authService,
             YandexAccountService accountService,
             ILogger<AuthController> logger)
         {
-            _authService = authService;
-            _accountService = accountService;
-            _logger = logger;
+            this.authService = authService;
+            this.accountService = accountService;
+            this.logger = logger;
         }
 
         [HttpPost]
         [Route("yandex/music/auth")]
-        //Авторизация через пароль идет в жопу, ибо не работает создание сессии.
-        //Нужно или пользователю мануально вводить токен, или авторизоваться как-то по другому
-        //Сейчас используй вместо пароля токен 
         public async Task<ActionResult> Auth([FromBody] LoginModel loginModel)
         {
-            await _authService.CreateAuthSessionAsync(loginModel.Login, loginModel.Password);
+            await authService.CreateAuthSessionAsync(loginModel.Username, loginModel.Login, loginModel.Password);
+            return Ok();
+        }
+        
+        [HttpPost]
+        [Route("yandex/music/auth/token")]
+        public async Task<ActionResult> Auth([FromBody] TokenLoginModel loginModel)
+        {
+            await authService.CreateAuthWithTokenAsync(loginModel.Username, loginModel.Token);
             return Ok();
         }
 
@@ -40,13 +45,13 @@ namespace Yandex.Music.Service.Controllers
         {
             try
             {
-                var account = await _accountService.GetAccountInfoAsync(username);
-                _logger.LogInformation("Successed: {AccountName}", account.Name);
+                var account = await accountService.GetAccountInfoAsync(username);
+                logger.LogInformation("Successed: {AccountName}", account.Name);
                 return Ok(account);
             }
             catch (AuthApiException e)
             {
-                _logger.LogError("Failed with exception: {E}", e);
+                logger.LogError("Failed with exception: {E}", e);
                 return BadRequest(e.Message);
             }
         }

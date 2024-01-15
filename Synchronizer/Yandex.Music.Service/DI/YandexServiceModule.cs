@@ -3,7 +3,7 @@ using MusicServices.Models.Contracts;
 using Yandex.Music.Service.Configuration;
 using Yandex.Music.Service.Helpers;
 using Yandex.Music.Service.Models;
-using Yandex.Music.Service.Models.Acount;
+using Yandex.Music.Service.Models.Account;
 using Yandex.Music.Service.Models.Auth;
 using Yandex.Music.Service.Models.Music;
 
@@ -11,11 +11,11 @@ namespace Yandex.Music.Service.DI
 {
     public class YandexServiceModule : Module
     {
-        private readonly YandexServiceConfig _config;
+        private readonly YandexServiceConfig config;
 
         public YandexServiceModule(YandexServiceConfig config)
         {
-            _config = config;
+            this.config = config;
         }
 
         protected override void Load(ContainerBuilder containerBuilder)
@@ -23,27 +23,17 @@ namespace Yandex.Music.Service.DI
             var factory = LoggerFactory.Create(x => x.AddConsole());
             containerBuilder.Register(_ => factory.CreateLogger("yandex_app"))
                 .As<ILogger>().SingleInstance();
-            containerBuilder.Register(_ => new ConsoleYandexCaptchaSolver())
-                .As<ConsoleYandexCaptchaSolver>()
-                .SingleInstance();
 
-            containerBuilder.Register(cc => _config)
+            containerBuilder.Register(cc => config)
                 .As<YandexServiceConfig>()
                 .SingleInstance();
 
-            containerBuilder.Register(cc => new YandexApiFactory())
-                .As<YandexApiFactory>()
-                .SingleInstance();
-
-            containerBuilder.Register(cc => new InMemoryYandexMusicAuthService(
-                cc.Resolve<YandexApiFactory>(),
-                cc.Resolve<YandexServiceConfig>()))
+            containerBuilder.Register(cc => new InMemoryYandexMusicAuthService())
                 .As<InMemoryYandexMusicAuthService>()
                 .SingleInstance();
 
             containerBuilder.Register(cc => new YandexClientsRepository(
-                cc.Resolve<InMemoryYandexMusicAuthService>(),
-                cc.Resolve<YandexApiFactory>()))
+                cc.Resolve<InMemoryYandexMusicAuthService>()))
                 .As<YandexClientsRepository>()
                 .SingleInstance();
 
