@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using MusicServices.Models;
 using Yandex.Music.Service.Configuration;
 using Yandex.Music.Service.Models;
 using Yandex.Music.Service.Models.Auth;
@@ -9,13 +9,13 @@ namespace Yandex.Music.Service.Controllers.ForTests
     [ApiController]
     public class TestingAuthController : ControllerBase
     {
-        private readonly YandexMusicAuthService _authService;
+        private readonly InMemoryYandexMusicAuthService _authService;
         private readonly YandexApiFactory _apiFactory;
         private readonly YandexServiceConfig _config;
 
         public TestingAuthController(
             YandexServiceConfig config,
-            YandexMusicAuthService authService,
+            InMemoryYandexMusicAuthService authService,
             YandexApiFactory apiFactory)
         {
             _config = config;
@@ -38,20 +38,22 @@ namespace Yandex.Music.Service.Controllers.ForTests
 
         [HttpPost]
         [Route("test/yandex/music/auth/token")]
+        //Авторизация через пароль идет в жопу, ибо не работает создание сессии.
+        //Нужно или пользователю мануально вводить токен, или авторизоваться как-то по другому
+        //Сейчас используй вместо пароля токен 
         public async Task<ActionResult<AuthorizationParameters>> CreateToken(LoginModel loginModel)
         {
             var yandexApi = _apiFactory.CreateApiClient();
             try
             {
-                await yandexApi.CreateAuthSession(loginModel.Login);
+                await yandexApi.Authorize(loginModel.Password);
             }
             catch (Exception ex)
             {
                 return Problem("Cannot create AuthSession. Try again later");
             }
-            await yandexApi.AuthorizeByAppPassword(loginModel.Password);
-            var token = await yandexApi.GetAccessToken();
-            var model = new AuthorizationParameters { Token = token.AccessToken, UserId = long.Parse(yandexApi.Account.Uid) };
+            //var token = await yandexApi.GetAccessToken();
+            var model = new AuthorizationParameters { Token = loginModel.Password, UserId = long.Parse(yandexApi.Account.Uid) };
 
             return Ok(model);
         }

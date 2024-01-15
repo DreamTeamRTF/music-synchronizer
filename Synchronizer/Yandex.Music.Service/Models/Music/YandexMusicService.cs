@@ -2,7 +2,7 @@
 using Yandex.Music.Api.Models.Track;
 using Yandex.Music.Service.Helpers;
 
-namespace Yandex.Music.Service.Models
+namespace Yandex.Music.Service.Models.Music
 {
     public class YandexMusicService
     {
@@ -15,14 +15,14 @@ namespace Yandex.Music.Service.Models
 
         public async Task<Track[]> GetPlaylistTracksAsync(PlaylistRequest request)
         {
-            var yTracks = await _apiClient.GetTracksFromPlaylistAsync(request.Login, request.PlaylistId).ConfigureAwait(false);
+            var yTracks = await _apiClient.GetTracksFromPlaylistAsync(request.Username, request.PlaylistId).ConfigureAwait(false);
             return yTracks.Select(t => t.FromYandexModel()).ToArray();
         }
 
-        public async Task<Playlist[]> GetOwnPlaylistAsync(OwnTracksRequest request)
+        public async Task<Playlist[]> GetOwnPlaylistsAsync(OwnPlaylistsRequest request)
         {
-            var playlist = await _apiClient.GetOwnPlaylistsAsync(request.Login);
-            return playlist.Select(p => p.FromYandexModel()).ToArray();
+            var playlists = await _apiClient.GetOwnPlaylistsAsync(request.Username);
+            return playlists.Select(p => p.FromYandexModel()).ToArray();
         }
     }
 }

@@ -1,37 +1,31 @@
 ﻿using System.Collections.Concurrent;
 using Yandex.Music.Service.Exceptions;
 using Yandex.Music.Client;
+using Yandex.Music.Service.Configuration;
 
 namespace Yandex.Music.Service.Models.Auth
 {
-    public class YandexMusicAuthService
+    public class InMemoryYandexMusicAuthService
     {
         private readonly ConcurrentDictionary<string, AuthorizationParameters> authorizedSessions = new();
-        private readonly YandexApiFactory apiFactory;
+        private readonly YandexApiFactory _apiFactory;
+        private readonly YandexServiceConfig _config;
 
-        public YandexMusicAuthService(YandexApiFactory apiFactory)
+        public InMemoryYandexMusicAuthService(YandexApiFactory apiFactory, YandexServiceConfig config)
         {
-            this.apiFactory = apiFactory;
+            _apiFactory = apiFactory;
+            _config = config;
         }
 
-        public async Task CreateAuthSessionAsync(string login, string password)
+        public async Task CreateAuthSessionAsync(string login, string token)
         {
-            var yandex = apiFactory.CreateApiClient();
+            var yandex = _apiFactory.CreateApiClient();
             if (authorizedSessions.ContainsKey(login)) throw new ArgumentException();
 
-            try
-            {
-                await yandex.CreateAuthSession(login);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Failed to create authSession, probably capcha. Try again later");
-            }
-            await yandex.AuthorizeByAppPassword(password);
-            var token = await yandex.GetAccessToken();
+            await yandex.Authorize(token);
 
             authorizedSessions.TryAdd(login,
-                new AuthorizationParameters {Token = token.AccessToken, UserId = yandex.GetLoginInfo()!.Id});
+                new AuthorizationParameters {Token = token, UserId = yandex.GetLoginInfo()!.Id});
         }
 
         public async Task<YandexMusicClientAsync> AuthAsync(YandexMusicClientAsync api, string login)

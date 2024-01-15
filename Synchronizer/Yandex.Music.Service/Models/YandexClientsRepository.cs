@@ -6,9 +6,9 @@ namespace Yandex.Music.Service.Models
     public class YandexClientsRepository
     {
         private readonly YandexApiFactory _apiFactory;
-        private readonly YandexMusicAuthService _yandexMusicService;
+        private readonly InMemoryYandexMusicAuthService _yandexMusicService;
 
-        public YandexClientsRepository(YandexMusicAuthService yandexMusicService, YandexApiFactory apiFactory)
+        public YandexClientsRepository(InMemoryYandexMusicAuthService yandexMusicService, YandexApiFactory apiFactory)
         {
             _apiFactory = apiFactory;
             _yandexMusicService = yandexMusicService;

@@ -9,6 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="C:\Users\alexy\.nuget\packages\km.yandex.music.api\1.6.0\contentFiles\any\net7.0\README.md" />
+    <Content Remove="C:\Users\alexy\.nuget\packages\km.yandex.music.client\1.6.0\contentFiles\any\net7.0\README.md" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Autofac" Version="7.1.0" />
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="8.0.0" />
     <PackageReference Include="KM.Yandex.Music.Api" Version="1.6.0" />
