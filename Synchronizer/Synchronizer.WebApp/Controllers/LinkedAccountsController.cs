@@ -82,4 +82,27 @@ public class LinkedAccountsController : Controller
         ModelState.AddModelError("", result.Error);
         return View(loginDto);
     }
+    
+    [HttpGet]
+    public IActionResult YandexAccountForm()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> YandexAccountForm(YandexLoginDto loginDto)
+    {
+        if (!ModelState.IsValid) return View(loginDto);
+
+        var result = await yandexMusicClient.AddLinkedAccountAsync(
+            Request.HttpContext.GetUsername(),
+            loginDto.Login,
+            loginDto.Password,
+            null);
+
+        if (result.IsSuccess) return RedirectToAction("Index", "Home");
+
+        ModelState.AddModelError("", result.Error);
+        return View(loginDto);
+    }
 }

@@ -11,6 +11,16 @@ services:
       - "8081:8020"
     networks: 
       - synchronizer-nw
+  yandexservice:
+    container_name: yandexservice
+    image: yandexservice
+    build:
+      context: .
+      dockerfile: Yandex.Music.Service/Dockerfile
+    ports:
+      - "8082:8030"
+    networks: 
+      - synchronizer-nw
   synchronizer:
     container_name: synchronizer
     image: synchronizer
@@ -19,6 +29,7 @@ services:
       dockerfile: Synchronizer.WebApp/Dockerfile
     environment:
       - vkserviceUrl=http://vkservice
+      - yandexserviceUrl=http://yandexservice
     ports:
       - "8080:80"
     stdin_open: true

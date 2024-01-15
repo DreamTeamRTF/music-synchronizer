@@ -14,10 +14,10 @@ public class VkNetClientsRepository : IVkNetClientsRepository
         this.vkApiFactory = vkApiFactory;
     }
 
-    public async Task<VkApi> GetAuthenticatedVkNetApiAsync(string login)
+    public async Task<VkApi> GetAuthenticatedVkNetApiAsync(string username)
     {
         var api = vkApiFactory.CreateApiClient();
-        await vkNetAuthService.AuthAsync(api, login);
+        await vkNetAuthService.AuthAsync(api, username);
         return api;
     }
 }
