@@ -15,7 +15,7 @@ public class YandexMusicClient : IYandexMusicClient
     {
         this.logger = logger;
     }
-    
+
     public Task<Playlist[]> GetUsersOwnPlaylistsAsync(string username)
     {
         throw new NotImplementedException();
@@ -25,7 +25,8 @@ public class YandexMusicClient : IYandexMusicClient
     {
         var client = new RestClient(HostUrl);
         var request = new RestRequest($"{YandexBaseUrl}/auth");
-        request.AddBody(new LoginModel { Username = username, Login = login, Password = password, SecondFactorCode = code});
+        request.AddBody(new LoginModel
+            { Username = username, Login = login, Password = password, SecondFactorCode = code });
         try
         {
             await client.PostAsync(request);

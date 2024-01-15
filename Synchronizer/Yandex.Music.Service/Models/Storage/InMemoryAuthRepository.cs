@@ -1,23 +1,22 @@
-﻿using MusicServices.Models;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
+using MusicServices.Models;
 using Yandex.Music.Service.Exceptions;
 
-namespace Yandex.Music.Service.Models.Storage
+namespace Yandex.Music.Service.Models.Storage;
+
+public class InMemoryAuthRepository
 {
-    public class InMemoryAuthRepository
+    private readonly ConcurrentDictionary<string, LoginModel> loginModels = new();
+
+    public LoginModel GetYandexLoginByUsername(string username)
     {
-        private readonly ConcurrentDictionary<string, LoginModel> loginModels = new();
+        if (loginModels.TryGetValue(username, out var loginModel)) return loginModel;
 
-        public LoginModel GetYandexLoginByUsername(string username)
-        {
-            if (loginModels.TryGetValue(username, out var loginModel)) return loginModel;
+        throw new AuthApiException("Логина нету");
+    }
 
-            throw new AuthApiException("Логина нету");
-        }
-
-        public void AddLoginModelByUsername(string username, LoginModel loginModel)
-        {
-            loginModels.TryAdd(username, loginModel);
-        }
+    public void AddLoginModelByUsername(string username, LoginModel loginModel)
+    {
+        loginModels.TryAdd(username, loginModel);
     }
 }

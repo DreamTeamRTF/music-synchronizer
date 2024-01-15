@@ -25,7 +25,8 @@ public class AuthController : ControllerBase
     [Route("vk/music/auth")]
     public async Task<ActionResult> Auth([FromBody] LoginModel loginModel)
     {
-        await authService.CreateAuthSessionAsync(loginModel.Username, loginModel.Login, loginModel.Password, loginModel.SecondFactorCode);
+        await authService.CreateAuthSessionAsync(loginModel.Username, loginModel.Login, loginModel.Password,
+            loginModel.SecondFactorCode);
         return Ok();
     }
 

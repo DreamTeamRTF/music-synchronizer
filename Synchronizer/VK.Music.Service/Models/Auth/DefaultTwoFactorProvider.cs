@@ -11,10 +11,7 @@ public class DefaultTwoFactorProvider : ITwoFactorVkProvider
 
     public string GetAuthCode(string username)
     {
-        if (TwoFactorRequiredUsers.RequiredSecondFactor.TryGetValue(username, out var code))
-        {
-            return code;
-        }
+        if (TwoFactorRequiredUsers.RequiredSecondFactor.TryGetValue(username, out var code)) return code;
 
         throw new AuthApiException("Code not found");
     }

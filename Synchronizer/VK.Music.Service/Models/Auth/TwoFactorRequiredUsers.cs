@@ -4,5 +4,5 @@ namespace VK.Music.Service.Models.Auth;
 
 public class TwoFactorRequiredUsers
 {
-    public static ConcurrentDictionary<string, string> RequiredSecondFactor = new ();
+    public static ConcurrentDictionary<string, string> RequiredSecondFactor = new();
 }

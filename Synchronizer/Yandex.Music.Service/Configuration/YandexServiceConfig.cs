@@ -1,9 +1,8 @@
-﻿namespace Yandex.Music.Service.Configuration
+﻿namespace Yandex.Music.Service.Configuration;
+
+public class YandexServiceConfig
 {
-    public class YandexServiceConfig
-    {
-        public string TestToken { get; init; }
-        public long TestUserId { get; init; }
-        public string TestLogin { get; init; }
-    }
+    public string TestToken { get; init; }
+    public long TestUserId { get; init; }
+    public string TestLogin { get; init; }
 }

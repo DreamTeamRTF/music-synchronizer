@@ -10,5 +10,6 @@ public class VkLoginDto
     [DataType(DataType.Password)]
     [Required(ErrorMessage = "Введите ваш пароль")]
     public string Password { get; set; }
+
     public string? Code2FA { get; set; }
 }

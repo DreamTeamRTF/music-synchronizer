@@ -1,12 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Synchronizer.Core;
 using Synchronizer.Core.DTO;
 using Synchronizer.Core.VK;
 using Synchronizer.Core.Yandex;
 using Synchronizer.WebApp.Extensions;
 using Synchronizer.WebApp.Models.Synchronizer.LinkedAccounts;
-using Synchronizer.WebApp.Models.Synchronizer.Playlists;
 
 namespace Synchronizer.WebApp.Controllers;
 
@@ -34,7 +32,7 @@ public class LinkedAccountsController : Controller
         return View(linkedAccountsViewModel);
     }
 
-    [HttpGet]// TODO Заглушка
+    [HttpGet] // TODO Заглушка
     public async Task<IActionResult> YandexAccount()
     {
         /*var linkedAccountsViewModel = new LinkedAccountsViewModel(
@@ -82,7 +80,7 @@ public class LinkedAccountsController : Controller
         ModelState.AddModelError("", result.Error);
         return View(loginDto);
     }
-    
+
     [HttpGet]
     public IActionResult YandexAccountForm()
     {
