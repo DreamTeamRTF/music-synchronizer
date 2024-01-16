@@ -2,6 +2,9 @@
 using MusicServices.Models;
 using RestSharp;
 using Services.Infrastructure;
+using System.ComponentModel.DataAnnotations;
+using System.Net;
+using System.Text.Json;
 
 namespace Synchronizer.Core.Yandex;
 
@@ -16,9 +19,13 @@ public class YandexMusicClient : IYandexMusicClient
         this.logger = logger;
     }
 
-    public Task<Playlist[]> GetUsersOwnPlaylistsAsync(string username)
+    public async Task<Playlist[]> GetUsersOwnPlaylistsAsync(string username)
     {
-        throw new NotImplementedException();
+        var client = new RestClient(HostUrl);
+        var request = new RestRequest($"{YandexBaseUrl}my/playlists");
+        request.AddQueryParameter("username", username);
+        var response = await client.GetAsync(request);
+        return JsonSerializer.Deserialize<Playlist[]>(response.Content!) ?? Array.Empty<Playlist>();
     }
 
     public async Task<Result<None>> AddLinkedAccountAsync(string username, string login, string password, string? code)
@@ -36,6 +43,24 @@ public class YandexMusicClient : IYandexMusicClient
         catch (Exception e)
         {
             return Result.Fail<None>(e.Message);
+        }
+    }
+
+    public async Task<Result<AccountInfoModel>> GetAccountInfoAsync(string username)
+    {
+        var client = new RestClient(HostUrl);
+        var request = new RestRequest($"{YandexBaseUrl}/account/info");
+        request.AddQueryParameter("username", username);
+        try
+        {
+            var response = await client.GetAsync(request);
+            return response.StatusCode == HttpStatusCode.OK
+                ? JsonSerializer.Deserialize<AccountInfoModel>(response.Content!).AsResult()!
+                :  Result.Fail<AccountInfoModel>(response.ErrorMessage);
+        }
+        catch(HttpRequestException e)
+        {
+            return Result.Fail<AccountInfoModel>(e.Message);
         }
     }
 }
