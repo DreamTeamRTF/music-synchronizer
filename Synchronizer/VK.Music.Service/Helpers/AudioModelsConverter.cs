@@ -10,7 +10,7 @@ public static class AudioModelsConverter
         return new Playlist(
             playlist.Id!.Value,
             playlist.Title,
-            playlist.Photo.Photo600,
+            playlist.Photo?.Photo600,
             null);
     }
 
