@@ -33,7 +33,7 @@ public class YandexApiClient
         var loginInfo = await api.GetLoginInfo().ConfigureAwait(false);
         var fav = await api.GetFavorites()
             .ConfigureAwait(false);
-        var ownPlaylistsShells = fav.Where(p => p.Owner.Login == username);
+        var ownPlaylistsShells = fav.Where(p => p.Owner.Login == loginInfo.Login);
         var ownPlaylists = new List<YPlaylist>();
 
         foreach (var p in ownPlaylistsShells) ownPlaylists.Add(await api.GetPlaylist(loginInfo.Id, p.Kind));

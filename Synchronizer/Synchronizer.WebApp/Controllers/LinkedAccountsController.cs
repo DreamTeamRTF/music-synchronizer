@@ -32,19 +32,14 @@ public class LinkedAccountsController : Controller
         return View(linkedAccountsViewModel);
     }
 
-    [HttpGet] // TODO Заглушка
+    [HttpGet]
     public async Task<IActionResult> YandexAccount()
     {
-        /*var linkedAccountsViewModel = new LinkedAccountsViewModel(
-            new LinkedVkAccount { Name = "AbibosVk", ImageUrl  = "https://sun9-3.userapi.com/impg/c857332/v857332149/319c8/uAEyqabx_WI.jpg?size=1080x1080&quality=96&sign=43d6e86e39d8fbabfcb5277e666df631&type=album" },
-            new LinkedYandexAccount { Name = "BaYanex", ImageUrl= "https://avatars.mds.yandex.net/get-yapic/47747/637Scc7TQQW2BmFFiC1ZsnRA3E-1/islands-200" });*/
-        var yandexAccount = new LinkedYandexAccount
-        {
-            Name = "BaYanex",
-            ImageUrl = "https://avatars.mds.yandex.net/get-yapic/47747/637Scc7TQQW2BmFFiC1ZsnRA3E-1/islands-200"
-        };
+        var accountResult = await yandexMusicClient.GetAccountInfoAsync(Request.HttpContext.GetUsername());
+        if (!accountResult.IsSuccess) return RedirectToAction("YandexAccountForm");
 
-        return View(yandexAccount);
+        var model = new LinkedYandexAccount { Name = accountResult.Value.Name, ImageUrl = accountResult.Value.ImageUrl };
+        return View(model);
     }
 
 

@@ -5,6 +5,7 @@ namespace Synchronizer.Core;
 
 public interface IMusicClient
 {
-    public Task<Playlist[]> GetUsersOwnPlaylistsAsync(string username);
+    public Task<Result<Playlist[]>> GetUsersOwnPlaylistsAsync(string username);
     public Task<Result<None>> AddLinkedAccountAsync(string username, string login, string password, string? code);
+    public Task<Result<AccountInfoModel>> GetAccountInfoAsync(string username);
 }

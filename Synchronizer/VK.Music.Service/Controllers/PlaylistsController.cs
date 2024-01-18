@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MusicServices.Models;
 using MusicServices.Models.Contracts;
+using VK.Music.Service.Exceptions;
 
 namespace VK.Music.Service.Controllers;
 
@@ -18,7 +19,14 @@ public class PlaylistsController : ControllerBase
     [Route("vk/music/own/playlists")]
     public async Task<ActionResult<Playlist[]>> Get([FromQuery] OwnPlaylistsRequest ownPlaylistsRequest)
     {
-        var playlists = await vkMusicService.GetOwnPlaylistsAsync(ownPlaylistsRequest).ConfigureAwait(false);
-        return Ok(playlists);
+        try
+        {
+            var playlists = await vkMusicService.GetOwnPlaylistsAsync(ownPlaylistsRequest).ConfigureAwait(false);
+            return Ok(playlists);
+        }
+        catch (AuthApiException e)
+        {
+            return Unauthorized();
+        }
     }
 }

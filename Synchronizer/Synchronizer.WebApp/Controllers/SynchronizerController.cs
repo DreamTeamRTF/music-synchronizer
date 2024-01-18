@@ -61,9 +61,16 @@ public class SynchronizerController : Controller
         IMusicClient client = musicService == MusicServiceTypeModel.VkMusic ? vkMusicClient : yandexMusicClient;
         logger.LogInformation("Using service: {MusicService}", musicService);
         var username = Request.HttpContext.GetUsername();
-        var playlists = await client.GetUsersOwnPlaylistsAsync(username);
+        var playlistsResult = await client.GetUsersOwnPlaylistsAsync(username);
+        if (!playlistsResult.IsSuccess)
+        {
+            var form = musicService == MusicServiceTypeModel.VkMusic 
+                ? "VkAccountForm" 
+                : "YandexAccountForm";
+            return RedirectToAction(form, "LinkedAccounts");
+        }
 
-        return View(playlists);
+        return View(playlistsResult.Value);
     }
 
     /*[HttpPost]

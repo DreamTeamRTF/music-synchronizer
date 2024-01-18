@@ -26,7 +26,7 @@ public class YandexServiceModule : Module
             .As<YandexServiceConfig>()
             .SingleInstance();
 
-        containerBuilder.Register(cc => new InMemoryYandexMusicAuthService())
+        containerBuilder.Register(cc => new InMemoryYandexMusicAuthService(cc.Resolve<ILogger<InMemoryYandexMusicAuthService>>()))
             .As<InMemoryYandexMusicAuthService>()
             .SingleInstance();
 

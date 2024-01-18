@@ -7,6 +7,12 @@ namespace Yandex.Music.Service.Models.Auth;
 public class InMemoryYandexMusicAuthService
 {
     private readonly ConcurrentDictionary<string, AuthorizationParameters> authorizedSessions = new();
+    private readonly ILogger<InMemoryYandexMusicAuthService> logger;
+
+    public InMemoryYandexMusicAuthService(ILogger<InMemoryYandexMusicAuthService> logger)
+    {
+        this.logger = logger;
+    }
 
     public async Task CreateAuthSessionAsync(string username, string login, string password)
     {
@@ -16,6 +22,7 @@ public class InMemoryYandexMusicAuthService
         await yandex.CreateAuthSession(login);
         await yandex.AuthorizeByAppPassword(password);
         var token = await yandex.GetAccessToken();
+        logger.LogInformation("Added {Username} to auth sessions", username);
 
         authorizedSessions.TryAdd(username,
             new AuthorizationParameters { Token = token.AccessToken, UserId = yandex.GetLoginInfo()!.Id });
@@ -34,6 +41,10 @@ public class InMemoryYandexMusicAuthService
 
     public async Task<YandexMusicClientAsync> AuthAsync(YandexMusicClientAsync api, string username)
     {
+        foreach (var pair in authorizedSessions)
+        {
+            logger.LogInformation("sessions now contains: {PairKey}", pair.Key);
+        }
         if (authorizedSessions.TryGetValue(username, out var authParams))
         {
             try

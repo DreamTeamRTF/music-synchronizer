@@ -2,9 +2,9 @@
 using MusicServices.Models;
 using RestSharp;
 using Services.Infrastructure;
-using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Text.Json;
+using Synchronizer.Core.Helpers;
 
 namespace Synchronizer.Core.Yandex;
 
@@ -19,20 +19,26 @@ public class YandexMusicClient : IYandexMusicClient
         this.logger = logger;
     }
 
-    public async Task<Playlist[]> GetUsersOwnPlaylistsAsync(string username)
+    public async Task<Result<Playlist[]>> GetUsersOwnPlaylistsAsync(string username)
     {
-        var client = new RestClient(HostUrl);
-        var request = new RestRequest($"{YandexBaseUrl}my/playlists");
+        var client = RestClientFactory.CreateRestClient(HostUrl);
+        var request = new RestRequest($"{YandexBaseUrl}/my/playlists");
         request.AddQueryParameter("username", username);
-        var response = await client.GetAsync(request);
-        return JsonSerializer.Deserialize<Playlist[]>(response.Content!) ?? Array.Empty<Playlist>();
+        var response = await client.ExecuteGetAsync(request);
+        logger.LogInformation("Got response status code: {StatusCode}, content{ResponseContent}",response.StatusCode, response.Content);
+        if (response.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            return Result.Fail<Playlist[]>("Auth fail");
+        }
+        var playlists = JsonSerializer.Deserialize<Playlist[]>(response.Content!) ?? Array.Empty<Playlist>();
+        return playlists.AsResult();
     }
 
     public async Task<Result<None>> AddLinkedAccountAsync(string username, string login, string password, string? code)
     {
-        var client = new RestClient(HostUrl);
+        var client = RestClientFactory.CreateRestClient(HostUrl);
         var request = new RestRequest($"{YandexBaseUrl}/auth");
-        request.AddBody(new LoginModel
+        request.AddJsonBody(new LoginModel
             { Username = username, Login = login, Password = password, SecondFactorCode = code });
         try
         {
@@ -48,7 +54,7 @@ public class YandexMusicClient : IYandexMusicClient
 
     public async Task<Result<AccountInfoModel>> GetAccountInfoAsync(string username)
     {
-        var client = new RestClient(HostUrl);
+        var client = RestClientFactory.CreateRestClient(HostUrl);
         var request = new RestRequest($"{YandexBaseUrl}/account/info");
         request.AddQueryParameter("username", username);
         try
@@ -56,7 +62,7 @@ public class YandexMusicClient : IYandexMusicClient
             var response = await client.GetAsync(request);
             return response.StatusCode == HttpStatusCode.OK
                 ? JsonSerializer.Deserialize<AccountInfoModel>(response.Content!).AsResult()!
-                :  Result.Fail<AccountInfoModel>(response.ErrorMessage);
+                :  Result.Fail<AccountInfoModel>(response.ErrorMessage!);
         }
         catch(HttpRequestException e)
         {
