@@ -6,13 +6,28 @@
 }
 
 <h2>Синхронизированные плейлисты</h2>
-<ul>
+<ul class="list-group list-group-horizontal list-group-flush" style="overflow-x: auto">
     @foreach (var playlist in Model.Playlists)
     {
-        <li>
-            <p>@playlist.Title</p>
-            <p>@playlist.ServiceType.ToString()</p>
-            <img src="@playlist.CoverImage" alt="Картинка плейлиста"/>
+        <li class="list-group-item">
+        <div class="card h-100" style="width: 20rem; max-width: 20rem;">
+            <!-- Playlist image-->
+            <div class="border border-opacity-10 border-3 align-self-center"
+                     style="height: 14rem; max-height: 14rem; max-width: 14rem; margin: 0.5rem; min-width: 14rem; background-color: #d9d9d98c;">
+                <img class="img-fluid mx-auto d-block" style="height: 100%" src="@playlist.CoverImage" alt="Картинка плейлиста" />
+            </div>
+            <!-- Playlist details-->
+            <div class="card-body p-4">
+                <div class="text-center">
+                    <!-- Playlist name-->
+                    <h5 class="fw-bolder">@playlist.Title</h5>
+                </div>
+                <div class="text-center">
+                    <!-- Playlist name-->
+                    <h5 class="fw-bolder">@playlist.ServiceType.ToString()</h5>
+                </div>
+            </div>
+        </div>
         </li>
     }
 </ul>
