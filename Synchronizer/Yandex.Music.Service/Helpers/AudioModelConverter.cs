@@ -1,4 +1,5 @@
 ﻿using MusicServices.Models;
+using Yandex.Music.Api.Models.Common.Cover;
 using Yandex.Music.Api.Models.Playlist;
 using Yandex.Music.Api.Models.Track;
 
@@ -12,9 +13,30 @@ public static class AudioModelConverter
         (
             long.Parse(yPlaylist.Kind),
             yPlaylist.Title,
-            yPlaylist.Owner.Uid!,
+            yPlaylist.GetImageFromPlaylist(),
             yPlaylist.FromYandexModelTracks()
         );
+    }
+
+    private static string GetImageFromPlaylist(this YPlaylist yPlaylist)
+    {
+        if (yPlaylist.Image is not null)
+        {
+            return yPlaylist.Image;
+        }
+        return yPlaylist.Cover switch
+        {
+            YCoverMosaic mosaic => mosaic.ItemsUri.First().GetProperImageUrl(),
+            YCoverImage image => image.Uri.GetProperImageUrl(),
+            YCoverPic pic => pic.Uri.GetProperImageUrl(),
+            _ => string.Empty,
+        };
+    }
+
+    private static string GetProperImageUrl(this string uri)
+    {
+        var n = uri.Length;
+        return $"https:\\\\{uri.Substring(0, n - 2)}200x200";
     }
 
     public static Track FromYandexModel(this YTrack yTrack)
