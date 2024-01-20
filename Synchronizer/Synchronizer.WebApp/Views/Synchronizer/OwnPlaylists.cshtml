@@ -1,4 +1,4 @@
-﻿@model MusicServices.Models.Playlist[]
+﻿@model (MusicServices.Models.Playlist[] playlists, Synchronizer.WebApp.Models.Synchronizer.Playlists.MusicServiceTypeModel serviceType)
 
 @{
     ViewBag.Title = "Плейлисты";
@@ -7,7 +7,7 @@
 
 <h2>Плейлисты</h2>
 <ul class="list-group list-group-horizontal list-group-flush" style="overflow-x: auto">
-    @foreach (var playlist in Model)
+    @foreach (var playlist in Model.playlists)
     {
         <li class="list-group-item">
             <div class="card h-100" style="width: 20rem; max-width: 20rem;">
@@ -26,7 +26,7 @@
                 <!-- Playlist actions-->
                 <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
                     <div class="text-center">
-                        <form method="post" asp-controller="Synchronizer" asp-action="SynchronizePlaylist" asp-route-musicService="YandexMusic" asp-route-playlistId="@playlist.Id">
+                        <form method="post" asp-controller="Synchronizer" asp-action="SynchronizePlaylist" asp-route-musicService="@Model.serviceType" asp-route-playlistId="@playlist.Id">
                             <input class="rounded-pill" type="submit" style="background-color: #b7c7e987;" value="Синхронизация"/>
                         </form>
                     </div>

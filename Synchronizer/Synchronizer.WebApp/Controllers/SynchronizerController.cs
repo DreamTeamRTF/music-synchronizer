@@ -90,10 +90,10 @@ public class SynchronizerController : Controller
             return RedirectToAction(form, "LinkedAccounts");
         }
 
-        return View(playlistsResult.Value);
+        return View((playlistsResult.Value, musicService));
     }
     
-    [HttpPost]
+    [HttpPost] //Todo: сделать страницу с синхронизованным плейлистом
     public async Task<IActionResult> SynchronizePlaylist(long playlistId, MusicServiceTypeModel musicService)
     {
         var playlistsResult = await synchronizerClient.SyncPlaylist(
@@ -103,15 +103,4 @@ public class SynchronizerController : Controller
 
         return RedirectToAction("Index", "Home");
     }
-
-    /*[HttpPost]
-    public async Task<IActionResult> SyncPlaylist(MusicServiceTypeModel musicService)
-    {
-        IMusicClient client = musicService == MusicServiceTypeModel.VkMusic ? yandexMusicClient : vkMusicClient;
-        logger.LogInformation("Using service: {MusicService}", musicService);
-        var username = Request.HttpContext.GetUsername();
-        var playlists = await client.GetUsersOwnPlaylistsAsync(username);
-
-        return View(playlists);
-    }*/
 }

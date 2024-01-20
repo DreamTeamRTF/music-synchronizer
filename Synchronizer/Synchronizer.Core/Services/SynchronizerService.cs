@@ -58,11 +58,14 @@ public class SynchronizerService : ISynchronizerService
     private async Task<Result<Playlist>> SyncFromVkAsync(string username, long playlistId)
     {
         var playlistResult = await vkMusicClient.GetPlaylistByIdAsync(username, playlistId);
+        
         if (playlistResult.IsSuccess)
         {
+            logger.LogInformation("Got playlist info from vk {ValueTitle}", playlistResult.Value.Title);
             var playlistAddResult = await yandexMusicClient.TryAddPlaylistAsync(username, playlistResult.Value);
             if (playlistAddResult.IsSuccess)
             {
+                logger.LogInformation("Added playlist into yandex {ValueTitle}", playlistAddResult.Value.Title);
                 try
                 {
                     await synchronizedPlaylistsRepository.InsertAsync(new SynchronizedPlaylistLink
@@ -86,7 +89,7 @@ public class SynchronizerService : ISynchronizerService
             return playlistAddResult;
         }
 
-        return Result.Fail<Playlist>($"Failed to sync playlist for {username}, id: {playlistId}");
+        return Result.Fail<Playlist>($"Failed to sync playlist for {username}, id: {playlistId}, {playlistResult.Error}");
     }
     
     private async Task<Result<Playlist>> SyncFromYandexAsync(string username, long playlistId)

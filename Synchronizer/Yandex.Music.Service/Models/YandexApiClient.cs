@@ -66,7 +66,11 @@ public class YandexApiClient
         foreach (var track in playlist.Tracks!)
         {
             var searchResult = await api.Search($"{track.Title} {track.Author}", YSearchType.Track);
-            foundedTracks.Add(searchResult.Tracks.Results.First());
+            var foundedTrack = searchResult?.Tracks?.Results?.First();
+            if (foundedTrack != null)
+            {
+                foundedTracks.Add(foundedTrack);
+            }
         }
 
         foundedTracks.Reverse();
