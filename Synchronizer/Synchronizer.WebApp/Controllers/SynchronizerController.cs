@@ -3,8 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 using Synchronizer.Core;
 using Synchronizer.Core.VK;
 using Synchronizer.Core.Yandex;
+using Synchronizer.Models.Contracts.VK;
 using Synchronizer.WebApp.Extensions;
+using Synchronizer.WebApp.Helpers;
 using Synchronizer.WebApp.Models.Synchronizer.Playlists;
+using Synchronizer.WebApp.Services;
 
 namespace Synchronizer.WebApp.Controllers;
 
@@ -14,20 +17,37 @@ public class SynchronizerController : Controller
     private readonly ILogger<SynchronizerController> logger;
     private readonly VkMusicClient vkMusicClient;
     private readonly YandexMusicClient yandexMusicClient;
+    private readonly SynchronizerClient synchronizerClient;
 
-    public SynchronizerController(VkMusicClient vkMusicClient, YandexMusicClient yandexMusicClient,
-        ILogger<SynchronizerController> logger)
+    public SynchronizerController(
+        VkMusicClient vkMusicClient,
+        YandexMusicClient yandexMusicClient,
+        ILogger<SynchronizerController> logger,
+        SynchronizerClient synchronizerClient)
     {
         this.vkMusicClient = vkMusicClient;
         this.yandexMusicClient = yandexMusicClient;
         this.logger = logger;
+        this.synchronizerClient = synchronizerClient;
     }
 
     [HttpGet] // TODO: Заглушка нужно получать из апишек
-    public IActionResult SynchronizedPlaylists()
+    public async Task<IActionResult> SynchronizedPlaylists()
     {
-        var vkAccount = vkMusicClient;
-        var yandexAccount = yandexMusicClient;
+        var playlistsResult = await synchronizerClient.GetSynchronizedPlaylists(HttpContext.GetUsername());
+        if (playlistsResult.IsSuccess)
+        {
+            logger.LogInformation("Sync Playlists Found");
+            var model = new SynchronizedPlaylistsModel
+                { 
+                    Playlists = playlistsResult.Value
+                    .Select(x => x.FromServiceModel())
+                    .ToArray() 
+                };
+
+            return View(model);
+        }
+       
         var synchronizedPlaylistsModel = new SynchronizedPlaylistsModel
         {
             Playlists = new[]
@@ -71,6 +91,17 @@ public class SynchronizerController : Controller
         }
 
         return View(playlistsResult.Value);
+    }
+    
+    [HttpPost]
+    public async Task<IActionResult> SynchronizePlaylist(long playlistId, MusicServiceTypeModel musicService)
+    {
+        var playlistsResult = await synchronizerClient.SyncPlaylist(
+            HttpContext.GetUsername(),
+            playlistId,
+            musicService.ToMusicServiceType());
+
+        return RedirectToAction("Index", "Home");
     }
 
     /*[HttpPost]

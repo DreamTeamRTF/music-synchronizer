@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Synchronizer.Core;
 using Synchronizer.Core.Extensions;
+using Synchronizer.WebApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,9 +10,10 @@ builder.Services.AddControllersWithViews();
 var applicationConfig = new SynchronizerConfig
 {
     DbConnection = builder.Configuration.GetConnectionString("Postgres")!,
-    MigrationsAssemly = typeof(Program).Assembly.ToString()
+    MigrationsAssemly = typeof(Synchronizer.DAL.SynchronizerDbContext).Assembly.ToString()
 };
 builder.Services.AddSynchronizerCore(applicationConfig);
+builder.Services.AddTransient<SynchronizerClient>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>

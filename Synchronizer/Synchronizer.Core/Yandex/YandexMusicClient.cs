@@ -11,7 +11,7 @@ namespace Synchronizer.Core.Yandex;
 public class YandexMusicClient : IYandexMusicClient
 {
     private const string YandexBaseUrl = "yandex/music";
-    private static readonly string HostUrl = Environment.GetEnvironmentVariable("yandexserviceUrl")!;
+    private static readonly string HostUrl = Environment.GetEnvironmentVariable("yandexServiceUrl")  ?? "http://127.0.0.1";
     private readonly ILogger<YandexMusicClient> logger;
 
     public YandexMusicClient(ILogger<YandexMusicClient> logger)
@@ -67,6 +67,43 @@ public class YandexMusicClient : IYandexMusicClient
         catch(HttpRequestException e)
         {
             return Result.Fail<AccountInfoModel>(e.Message);
+        }
+    }
+    
+    public async Task<Result<Playlist>> TryAddPlaylistAsync(string username, Playlist playlist)
+    {
+        var client = RestClientFactory.CreateRestClient(HostUrl);
+        var request = new RestRequest($"{YandexBaseUrl}/add/playlist");
+        request.AddJsonBody(new PlaylistToAddRequest { Username = username, Playlist = playlist });
+        try
+        {
+            var response = await client.PostAsync(request);
+            return response.StatusCode == HttpStatusCode.OK
+                ? JsonSerializer.Deserialize<Playlist>(response.Content!).AsResult()!
+                :  Result.Fail<Playlist>(response.ErrorMessage!);
+        }
+        catch(HttpRequestException e)
+        {
+            return Result.Fail<Playlist>(e.Message);
+        }
+    }
+    
+    public async Task<Result<Playlist>> GetPlaylistByIdAsync(string username, long id)
+    {
+        var client = RestClientFactory.CreateRestClient(HostUrl);
+        var request = new RestRequest($"{YandexBaseUrl}/playlist/findById");
+        request.AddQueryParameter("username", username);
+        request.AddQueryParameter("playlistId", id);
+        try
+        {
+            var response = await client.GetAsync(request);
+            return response.StatusCode == HttpStatusCode.OK
+                ? JsonSerializer.Deserialize<Playlist>(response.Content!).AsResult()!
+                : Result.Fail<Playlist>($"Failed to find playlist {id} for user {username}");
+        }
+        catch (HttpRequestException e)
+        {
+            return Result.Fail<Playlist>(e.Message);
         }
     }
 }

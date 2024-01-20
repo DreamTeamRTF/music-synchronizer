@@ -1,6 +1,6 @@
 ﻿namespace Synchronizer.DAL.Entities;
 
-public class Playlist : BaseEntity<long>
+public class PlaylistEntity : BaseEntity<long>
 {
     public string Title { get; set; }
     public MusicServiceType MusicService { get; set; }

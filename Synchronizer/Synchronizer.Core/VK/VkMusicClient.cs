@@ -5,13 +5,14 @@ using MusicServices.Models;
 using RestSharp;
 using Services.Infrastructure;
 using Synchronizer.Core.Helpers;
+using Synchronizer.Models.Contracts.VK;
 
 namespace Synchronizer.Core.VK;
 
 public class VkMusicClient : IVkMusicClient
 {
     private const string VkBaseUrl = "vk/music";
-    private static readonly string HostUrl = Environment.GetEnvironmentVariable("vkserviceUrl")!;
+    private static readonly string HostUrl = Environment.GetEnvironmentVariable("vkServiceUrl") ?? "http://localhost";
     private readonly ILogger<VkMusicClient> logger;
 
     public VkMusicClient(ILogger<VkMusicClient> logger)
@@ -65,6 +66,44 @@ public class VkMusicClient : IVkMusicClient
         catch (HttpRequestException e)
         {
             return Result.Fail<AccountInfoModel>(e.Message);
+        }
+    }
+    
+    public async Task<Result<Playlist>> TryAddPlaylistAsync(string username, Playlist playlist)
+    {
+        var client = RestClientFactory.CreateRestClient(HostUrl);
+        var request = new RestRequest($"{VkBaseUrl}/add/playlist");
+        request.AddJsonBody(new PlaylistToAddRequest { Username = username, Playlist = playlist });
+        try
+        {
+            var response = await client.PostAsync(request);
+            return response.StatusCode == HttpStatusCode.OK
+                ? JsonSerializer.Deserialize<Playlist>(response.Content!).AsResult()!
+                :  Result.Fail<Playlist>(response.ErrorMessage!);
+        }
+        catch(HttpRequestException e)
+        {
+            return Result.Fail<Playlist>(e.Message);
+        }
+    }
+
+    
+    public async Task<Result<Playlist>> GetPlaylistByIdAsync(string username, long id)
+    {
+        var client = RestClientFactory.CreateRestClient(HostUrl);
+        var request = new RestRequest($"{VkBaseUrl}/playlist/findById");
+        request.AddQueryParameter("username", username);
+        request.AddQueryParameter("playlistId", id);
+        try
+        {
+            var response = await client.GetAsync(request);
+            return response.StatusCode == HttpStatusCode.OK
+                ? JsonSerializer.Deserialize<Playlist>(response.Content!).AsResult()!
+                : Result.Fail<Playlist>(response.ErrorMessage!);
+        }
+        catch (HttpRequestException e)
+        {
+            return Result.Fail<Playlist>(e.Message);
         }
     }
 }

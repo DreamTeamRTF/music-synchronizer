@@ -1,9 +1,9 @@
 ﻿networks:
   synchronizer-nw:
 services:
-  vkservice:
-    container_name: vkservice
-    image: vkservice
+  vk-service:
+    container_name: vk-service
+    image: vk-service
     build:
       context: .
       dockerfile: VK.Music.Service/Dockerfile
@@ -11,9 +11,9 @@ services:
       - "8081:8020"
     networks: 
       - synchronizer-nw
-  yandexservice:
-    container_name: yandexservice
-    image: yandexservice
+  yandex-service:
+    container_name: yandex-service
+    image: yandex-service
     build:
       context: .
       dockerfile: Yandex.Music.Service/Dockerfile
@@ -21,15 +21,32 @@ services:
       - "8082:8030"
     networks: 
       - synchronizer-nw
-  synchronizer:
-    container_name: synchronizer
-    image: synchronizer
+  synchronizer-service:
+    container_name: synchronizer-service
+    image: synchronizer-service
+    build:
+      context: .
+      dockerfile: Synchronizer.Service/Dockerfile
+    environment:
+      - vkServiceUrl=http://vk-service
+      - yandexServiceUrl=http://yandex-service
+    ports:
+      - "8083:80"
+    stdin_open: true
+    networks: 
+      - synchronizer-nw
+    depends_on: 
+      - postgres
+  synchronizer-web:
+    container_name: synchronizer-web
+    image: synchronizer-web
     build:
       context: .
       dockerfile: Synchronizer.WebApp/Dockerfile
     environment:
-      - vkserviceUrl=http://vkservice
-      - yandexserviceUrl=http://yandexservice
+      - vkServiceUrl=http://vk-service
+      - yandexServiceUrl=http://yandex-service
+      - synchronizerServiceUrl=http://synchronizer-service
     ports:
       - "8080:80"
     stdin_open: true

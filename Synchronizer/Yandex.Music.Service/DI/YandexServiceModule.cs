@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using MusicServices.Models.Contracts;
 using Yandex.Music.Service.Configuration;
 using Yandex.Music.Service.Models;
 using Yandex.Music.Service.Models.Account;
@@ -47,7 +48,7 @@ public class YandexServiceModule : Module
 
         containerBuilder.Register(cc => new YandexMusicService(
                 cc.Resolve<YandexApiClient>()))
-            .As<YandexMusicService>()
+            .As<IMusicService>()
             .SingleInstance();
     }
 }

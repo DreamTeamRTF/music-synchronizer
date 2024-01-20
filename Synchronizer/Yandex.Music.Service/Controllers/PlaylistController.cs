@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MusicServices.Models;
+using MusicServices.Models.Contracts;
 using Yandex.Music.Service.Exceptions;
 using Yandex.Music.Service.Models.Music;
 
@@ -8,10 +9,10 @@ namespace Yandex.Music.Service.Controllers;
 [ApiController]
 public class PlaylistsController : ControllerBase
 {
-    private readonly YandexMusicService yandexMusicService;
+    private readonly IMusicService yandexMusicService;
     private readonly ILogger<PlaylistsController> logger;
 
-    public PlaylistsController(YandexMusicService yandexMusicService, ILogger<PlaylistsController> logger)
+    public PlaylistsController(IMusicService yandexMusicService, ILogger<PlaylistsController> logger)
     {
         this.yandexMusicService = yandexMusicService;
         this.logger = logger;
@@ -33,6 +34,19 @@ public class PlaylistsController : ControllerBase
         {
             return Unauthorized();
         }
+    }
+    
+    [HttpPost]
+    [Route("yandex/music/add/playlist")]
+    public async Task<ActionResult<Playlist>> AddPlaylist([FromBody] PlaylistToAddRequest playlistToAddRequest)
+    {
+        return await yandexMusicService.AddPlaylistAsync(playlistToAddRequest);
+    }
 
+    [HttpGet]
+    [Route("yandex/music/playlist/findById")]
+    public async Task<ActionResult<Playlist?>> FindPlaylistById([FromQuery] FindPlaylistByIdRequest request)
+    {
+        return await yandexMusicService.FindPlaylistByIdAsync(request);
     }
 }

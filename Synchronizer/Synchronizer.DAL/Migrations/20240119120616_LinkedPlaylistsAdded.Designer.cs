@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Synchronizer.DAL;
@@ -11,9 +12,11 @@ using Synchronizer.DAL;
 namespace Synchronizer.WebApp.Migrations
 {
     [DbContext(typeof(SynchronizerDbContext))]
-    partial class SynchronizerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240119120616_LinkedPlaylistsAdded")]
+    partial class LinkedPlaylistsAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -22,7 +25,7 @@ namespace Synchronizer.WebApp.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Synchronizer.DAL.Entities.Playlist", b =>
+            modelBuilder.Entity("Synchronizer.DAL.Entities.PlaylistEntity", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -59,6 +62,28 @@ namespace Synchronizer.WebApp.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Roles");
+                });
+
+            modelBuilder.Entity("Synchronizer.DAL.Entities.SynchronizedPlaylistLink", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("MainMusicService")
+                        .IsRequired()
+                        .IsUnicode(false)
+                        .HasColumnType("text");
+
+                    b.Property<long>("VkPlaylistId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("YandexPlaylistId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Links");
                 });
 
             modelBuilder.Entity("Synchronizer.DAL.Entities.Track", b =>
@@ -126,13 +151,13 @@ namespace Synchronizer.WebApp.Migrations
 
             modelBuilder.Entity("Synchronizer.DAL.Entities.Track", b =>
                 {
-                    b.HasOne("Synchronizer.DAL.Entities.Playlist", "Playlist")
+                    b.HasOne("Synchronizer.DAL.Entities.PlaylistEntity", "PlaylistEntity")
                         .WithMany("Tracks")
                         .HasForeignKey("PlaylistId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Playlist");
+                    b.Navigation("PlaylistEntity");
                 });
 
             modelBuilder.Entity("Synchronizer.DAL.Entities.User", b =>
@@ -146,7 +171,7 @@ namespace Synchronizer.WebApp.Migrations
                     b.Navigation("Role");
                 });
 
-            modelBuilder.Entity("Synchronizer.DAL.Entities.Playlist", b =>
+            modelBuilder.Entity("Synchronizer.DAL.Entities.PlaylistEntity", b =>
                 {
                     b.Navigation("Tracks");
                 });

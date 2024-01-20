@@ -1,9 +1,10 @@
 ﻿using MusicServices.Models;
+using MusicServices.Models.Contracts;
 using Yandex.Music.Service.Helpers;
 
 namespace Yandex.Music.Service.Models.Music;
 
-public class YandexMusicService
+public class YandexMusicService : IMusicService
 {
     private readonly YandexApiClient apiClient;
 
@@ -23,5 +24,17 @@ public class YandexMusicService
     {
         var playlists = await apiClient.GetOwnPlaylistsAsync(request.Username);
         return playlists.Select(p => p.FromYandexModel()).ToArray();
+    }
+    
+    public async Task<Playlist> AddPlaylistAsync(PlaylistToAddRequest request)
+    {
+        var playlist = await apiClient.SavePlaylistAsync(request.Username, request.Playlist);
+        return playlist.FromYandexModel();
+    }
+
+    public async Task<Playlist?> FindPlaylistByIdAsync(FindPlaylistByIdRequest request)
+    {
+        var playlist = await apiClient.FindByIdAsync(request.Username, request.PlaylistId);
+        return playlist?.FromYandexModel();
     }
 }

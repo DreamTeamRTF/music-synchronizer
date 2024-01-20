@@ -10,5 +10,5 @@ public class Track : BaseEntity<long>
     public MusicServiceType MusicService { get; set; }
     public long PlaylistId { get; set; }
 
-    [ForeignKey(nameof(PlaylistId))] public Playlist Playlist { get; set; }
+    [ForeignKey(nameof(PlaylistId))] public PlaylistEntity PlaylistEntity { get; set; }
 }

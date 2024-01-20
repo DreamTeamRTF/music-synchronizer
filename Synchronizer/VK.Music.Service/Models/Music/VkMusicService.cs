@@ -15,14 +15,25 @@ public class VkMusicService : IMusicService
 
     public async Task<Track[]> GetPlaylistTracksAsync(PlaylistRequest request)
     {
-        var audios = await apiClient.GetTracksFromPlaylistAsync(request.Username, request.PlaylistId)
-            .ConfigureAwait(false);
+        var audios = await apiClient.GetTracksFromPlaylistAsync(request.Username, request.PlaylistId);
         return audios.Select(a => a.FromVkModel()).ToArray();
     }
 
     public async Task<Playlist[]> GetOwnPlaylistsAsync(OwnPlaylistsRequest request)
     {
-        var playlists = await apiClient.GetOwnPlaylistsAsync(request.Username).ConfigureAwait(false);
-        return playlists.Select(p => p.FromVkModel()).ToArray();
+        var playlists = await apiClient.GetOwnPlaylistsAsync(request.Username);
+        return playlists.Select(p => p.Item1.FromVkModel(p.Item2)).ToArray();
+    }
+
+    public async Task<Playlist> AddPlaylistAsync(PlaylistToAddRequest request)
+    {
+        var playlist = await apiClient.SavePlaylistAsync(request.Username, request.Playlist);
+        return playlist.Item1.FromVkModel(playlist.Item2);
+    }
+
+    public async Task<Playlist?> FindPlaylistByIdAsync(FindPlaylistByIdRequest request)
+    {
+        var playlist = await apiClient.FindByIdAsync(request.Username, request.PlaylistId);
+        return playlist.Item1.FromVkModel(playlist.Item2); 
     }
 }

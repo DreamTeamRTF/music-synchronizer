@@ -5,13 +5,13 @@ namespace VK.Music.Service.Helpers;
 
 public static class AudioModelsConverter
 {
-    public static Playlist FromVkModel(this AudioPlaylist playlist)
+    public static Playlist FromVkModel(this AudioPlaylist playlist, Audio[]? audios)
     {
         return new Playlist(
             playlist.Id!.Value,
             playlist.Title,
             playlist.Photo?.Photo600,
-            null);
+            audios?.Select(x => x.FromVkModel()).ToArray());
     }
 
 

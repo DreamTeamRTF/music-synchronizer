@@ -26,7 +26,9 @@
                 <!-- Playlist actions-->
                 <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
                     <div class="text-center">
-                        <button class="rounded-pill" style="background-color: #b7c7e987;" style="" asp-controller="Synchronizer" asp-action="">Синхронизировать</button>
+                        <form method="post" asp-controller="Synchronizer" asp-action="SynchronizePlaylist" asp-route-musicService="YandexMusic" asp-route-playlistId="@playlist.Id">
+                            <input class="rounded-pill" type="submit" style="background-color: #b7c7e987;" value="Синхронизация"/>
+                        </form>
                     </div>
                 </div>
             </div>

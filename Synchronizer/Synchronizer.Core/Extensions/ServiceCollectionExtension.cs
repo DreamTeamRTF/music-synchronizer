@@ -14,6 +14,7 @@ public static class ServiceCollectionExtension
         collection.AddTransient<IUserService, UserService>();
         collection.AddTransient<VkMusicClient, VkMusicClient>();
         collection.AddTransient<YandexMusicClient, YandexMusicClient>();
+        collection.AddTransient<ISynchronizerService, SynchronizerService>();
         return collection;
     }
 }

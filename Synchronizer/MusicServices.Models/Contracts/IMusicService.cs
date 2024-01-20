@@ -14,4 +14,11 @@ public interface IMusicService
     ///     Метод для получения всех плейлистов созданых пользователем
     /// </summary>
     public Task<Playlist[]> GetOwnPlaylistsAsync(OwnPlaylistsRequest request);
+    
+    /// <summary>
+    ///     Метод для сохранения плейлиста из другого сервиса
+    /// </summary>
+    public Task<Playlist> AddPlaylistAsync(PlaylistToAddRequest request);
+    
+    public Task<Playlist?> FindPlaylistByIdAsync(FindPlaylistByIdRequest request);
 }

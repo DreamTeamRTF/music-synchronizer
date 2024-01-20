@@ -17,7 +17,7 @@ public class PlaylistsController : ControllerBase
 
     [HttpGet]
     [Route("vk/music/own/playlists")]
-    public async Task<ActionResult<Playlist[]>> Get([FromQuery] OwnPlaylistsRequest ownPlaylistsRequest)
+    public async Task<ActionResult<Playlist[]>> GetOwnPlaylists([FromQuery] OwnPlaylistsRequest ownPlaylistsRequest)
     {
         try
         {
@@ -28,5 +28,19 @@ public class PlaylistsController : ControllerBase
         {
             return Unauthorized();
         }
+    }
+    
+    [HttpPost]
+    [Route("vk/music/add/playlist")]
+    public async Task<ActionResult<Playlist>> AddPlaylist([FromBody] PlaylistToAddRequest playlistToAddRequest)
+    {
+        return await vkMusicService.AddPlaylistAsync(playlistToAddRequest);
+    }
+    
+    [HttpGet]
+    [Route("vk/music/playlist/findById")]
+    public async Task<ActionResult<Playlist?>> AddPlaylist([FromQuery] FindPlaylistByIdRequest findPlaylistByIdRequest)
+    {
+        return await vkMusicService.FindPlaylistByIdAsync(findPlaylistByIdRequest);
     }
 }

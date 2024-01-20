@@ -7,14 +7,14 @@ namespace MusicServices.Models;
 /// </summary>
 public class Track
 {
-    public Track(string name, string author, string? album)
+    public Track(string title, string author, string? album)
     {
-        Name = name;
+        Title = title;
         Author = author;
         Album = album;
     }
 
-    [JsonPropertyName("name")] public string Name { get; private set; }
+    [JsonPropertyName("name")] public string Title { get; private set; }
 
     [JsonPropertyName("author")] public string Author { get; private set; }
 
