@@ -4,7 +4,25 @@
     ViewBag.Title = "Yanex.Music";
     Layout = "_Layout";
 }
-<img alt="yandex logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Yandex_Music_icon.svg/2048px-Yandex_Music_icon.svg.png" width="40px"/>
-<h2>Yandex</h2>
-<h3>@Model.Name</h3>
-<img alt="" src="@Model.ImageUrl" width="100px"/>
+<div class="card m-3" style="height:22rem; width:50rem; display: inline-flex;">
+    <div class="row gx-5">
+        <div class="col mt-2 ms-2 d-flex align-content-center" style="max-width: max-content; min-width:20rem; min-height:20rem;">
+            <div class="justify-content-end" style="display: inline-flex; max-width:20rem; max-height:20rem; min-width: 15rem; min-height:15rem;">
+                <img alt="Тут должно быть фото профиля" class="img-fluid d-block"
+                    style="background-color:lightgrey; max-height:20rem; min-width:19rem;" src="@Model.ImageUrl">
+                <span class="position-absolute top-0 badge bg-secondary">
+                    <img alt="yandex logo" style="max-width:2rem; max-height:2rem;" 
+                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Yandex_Music_icon.svg/2048px-Yandex_Music_icon.svg.png">
+                </span>
+            </div>
+        </div>
+        <div class="col ps-0 d-flex">
+            <div class="row mt-2">
+                <h2>Yandex</h2>
+            </div>
+            <div class="row align-self-center">
+                <h3>Имя:@Model.Name</h3>
+            </div>
+        </div>
+    </div>
+</div>
