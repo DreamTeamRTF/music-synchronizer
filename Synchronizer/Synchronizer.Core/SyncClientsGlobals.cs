@@ -1,7 +1,6 @@
 ﻿using Synchronizer.Core.VK;
 using Synchronizer.Core.Yandex;
 using Synchronizer.DAL.Entities;
-using Synchronizer.Models.Contracts.VK;
 
 namespace Synchronizer.Core;
 

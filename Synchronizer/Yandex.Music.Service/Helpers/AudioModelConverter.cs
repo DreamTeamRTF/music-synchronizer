@@ -20,23 +20,27 @@ public static class AudioModelConverter
 
     private static string GetImageFromPlaylist(this YPlaylist yPlaylist)
     {
-        if (yPlaylist.Image is not null)
-        {
-            return yPlaylist.Image;
-        }
+        if (yPlaylist.Image is not null) return yPlaylist.Image;
         return yPlaylist.Cover switch
         {
-            YCoverMosaic mosaic => mosaic.ItemsUri.First().GetProperImageUrl(),
+            YCoverMosaic mosaic => mosaic.ItemsUri.First().GetMosaicImageUrl(),
             YCoverImage image => image.Uri.GetProperImageUrl(),
             YCoverPic pic => pic.Uri.GetProperImageUrl(),
-            _ => string.Empty,
+            _ =>
+                "https://static.vecteezy.com/system/resources/previews/000/533/338/original/lightning-bolt-icon-vector.jpg"
         };
     }
 
     private static string GetProperImageUrl(this string uri)
     {
         var n = uri.Length;
-        return $"https:\\\\{uri.Substring(0, n - 2)}200x200";
+        return $@"https:\\{uri[..(n - 2)].Replace("%%", "/m200x200")}";
+    }
+
+    private static string GetMosaicImageUrl(this string uri)
+    {
+        var n = uri.Length;
+        return $@"https:\\{uri.Substring(0, n - 2)}200x200";
     }
 
     public static Track FromYandexModel(this YTrack yTrack)

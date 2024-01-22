@@ -14,7 +14,7 @@ public static class MusicTypeConverter
             _ => throw new ArgumentOutOfRangeException(nameof(typeModel))
         };
     }
-    
+
     public static MusicServiceTypeModel ToMusicServiceType(this MusicServiceType typeModel)
     {
         return typeModel switch

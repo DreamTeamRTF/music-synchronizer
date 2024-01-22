@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Synchronizer.Core.DTO;
 using Synchronizer.Core.VK;
 using Synchronizer.Core.Yandex;
-using Synchronizer.Models.Contracts.VK;
 using Synchronizer.WebApp.Extensions;
 using Synchronizer.WebApp.Models.Synchronizer.LinkedAccounts;
 
@@ -27,7 +26,8 @@ public class LinkedAccountsController : Controller
         var accountResult = await yandexMusicClient.GetAccountInfoAsync(Request.HttpContext.GetUsername());
         if (!accountResult.IsSuccess) return RedirectToAction("YandexAccountForm");
 
-        var model = new LinkedYandexAccount { Name = accountResult.Value.Name, ImageUrl = accountResult.Value.ImageUrl };
+        var model = new LinkedYandexAccount
+            { Name = accountResult.Value.Name, ImageUrl = accountResult.Value.ImageUrl };
         return View(model);
     }
 

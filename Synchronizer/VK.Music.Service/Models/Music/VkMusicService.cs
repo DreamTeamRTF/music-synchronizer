@@ -34,6 +34,25 @@ public class VkMusicService : IMusicService
     public async Task<Playlist?> FindPlaylistByIdAsync(FindPlaylistByIdRequest request)
     {
         var playlist = await apiClient.FindByIdAsync(request.Username, request.PlaylistId);
-        return playlist.Item1.FromVkModel(playlist.Item2); 
+        return playlist.Item1.FromVkModel(playlist.Item2);
+    }
+
+    public async Task<Playlist?> SmartPlaylistUpdateAsync(SmartPlaylistUpdateModel request)
+    {
+        var playlist = await apiClient.SmartUpdateAsync(
+            request.Username,
+            request.PlaylistId,
+            request.TracksToAdd,
+            request.TracksToRemove);
+        return playlist.Item1.FromVkModel(playlist.Item2);
+    }
+
+    public async Task<Playlist> UpdatePlaylistAsync(PlaylistUpdateModel request)
+    {
+        var playlist = await apiClient.UpdateAsync(
+            request.Username,
+            request.PlaylistId,
+            request.Source);
+        return playlist.Item1.FromVkModel(playlist.Item2);
     }
 }

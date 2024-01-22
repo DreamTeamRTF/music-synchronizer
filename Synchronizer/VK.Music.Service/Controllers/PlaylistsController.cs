@@ -29,18 +29,33 @@ public class PlaylistsController : ControllerBase
             return Unauthorized();
         }
     }
-    
+
     [HttpPost]
     [Route("vk/music/add/playlist")]
     public async Task<ActionResult<Playlist>> AddPlaylist([FromBody] PlaylistToAddRequest playlistToAddRequest)
     {
         return await vkMusicService.AddPlaylistAsync(playlistToAddRequest);
     }
-    
+
     [HttpGet]
     [Route("vk/music/playlist/findById")]
     public async Task<ActionResult<Playlist?>> AddPlaylist([FromQuery] FindPlaylistByIdRequest findPlaylistByIdRequest)
     {
         return await vkMusicService.FindPlaylistByIdAsync(findPlaylistByIdRequest);
+    }
+
+    [HttpPost]
+    [Route("vk/music/playlist/smart-update")]
+    public async Task<ActionResult<Playlist?>> SmartUpdatePlaylist(
+        [FromBody] SmartPlaylistUpdateModel smartPlaylistUpdateModel)
+    {
+        return await vkMusicService.SmartPlaylistUpdateAsync(smartPlaylistUpdateModel);
+    }
+
+    [HttpPost]
+    [Route("vk/music/playlist/update")]
+    public async Task<ActionResult<Playlist?>> UpdatePlaylist([FromBody] PlaylistUpdateModel playlistUpdateModel)
+    {
+        return await vkMusicService.UpdatePlaylistAsync(playlistUpdateModel);
     }
 }

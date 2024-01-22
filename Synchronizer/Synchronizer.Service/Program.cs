@@ -1,5 +1,6 @@
 using Synchronizer.Core;
 using Synchronizer.Core.Extensions;
+using Synchronizer.DAL;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,7 +13,7 @@ builder.Services.AddSwaggerGen();
 var applicationConfig = new SynchronizerConfig
 {
     DbConnection = builder.Configuration.GetConnectionString("Postgres")!,
-    MigrationsAssemly = typeof(Synchronizer.DAL.SynchronizerDbContext).Assembly.ToString()
+    MigrationsAssemly = typeof(SynchronizerDbContext).Assembly.ToString()
 };
 builder.Services.AddSynchronizerCore(applicationConfig);
 

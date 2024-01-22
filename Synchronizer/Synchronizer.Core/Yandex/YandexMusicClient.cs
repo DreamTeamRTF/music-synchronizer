@@ -1,9 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Net;
+using System.Text.Json;
+using Microsoft.Extensions.Logging;
 using MusicServices.Models;
 using RestSharp;
 using Services.Infrastructure;
-using System.Net;
-using System.Text.Json;
 using Synchronizer.Core.Helpers;
 
 namespace Synchronizer.Core.Yandex;
@@ -11,7 +11,10 @@ namespace Synchronizer.Core.Yandex;
 public class YandexMusicClient : IYandexMusicClient
 {
     private const string YandexBaseUrl = "yandex/music";
-    private static readonly string HostUrl = Environment.GetEnvironmentVariable("yandexServiceUrl")  ?? "http://127.0.0.1";
+
+    private static readonly string HostUrl =
+        Environment.GetEnvironmentVariable("yandexServiceUrl") ?? "http://127.0.0.1";
+
     private readonly ILogger<YandexMusicClient> logger;
 
     public YandexMusicClient(ILogger<YandexMusicClient> logger)
@@ -25,11 +28,9 @@ public class YandexMusicClient : IYandexMusicClient
         var request = new RestRequest($"{YandexBaseUrl}/my/playlists");
         request.AddQueryParameter("username", username);
         var response = await client.ExecuteGetAsync(request);
-        logger.LogInformation("Got response status code: {StatusCode}, content{ResponseContent}",response.StatusCode, response.Content);
-        if (response.StatusCode == HttpStatusCode.Unauthorized)
-        {
-            return Result.Fail<Playlist[]>("Auth fail");
-        }
+        logger.LogInformation("Got response status code: {StatusCode}, content{ResponseContent}", response.StatusCode,
+            response.Content);
+        if (response.StatusCode == HttpStatusCode.Unauthorized) return Result.Fail<Playlist[]>("Auth fail");
         var playlists = JsonSerializer.Deserialize<Playlist[]>(response.Content!) ?? Array.Empty<Playlist>();
         return playlists.AsResult();
     }
@@ -62,14 +63,14 @@ public class YandexMusicClient : IYandexMusicClient
             var response = await client.GetAsync(request);
             return response.StatusCode == HttpStatusCode.OK
                 ? JsonSerializer.Deserialize<AccountInfoModel>(response.Content!).AsResult()!
-                :  Result.Fail<AccountInfoModel>(response.ErrorMessage!);
+                : Result.Fail<AccountInfoModel>(response.ErrorMessage!);
         }
-        catch(HttpRequestException e)
+        catch (HttpRequestException e)
         {
             return Result.Fail<AccountInfoModel>(e.Message);
         }
     }
-    
+
     public async Task<Result<Playlist>> TryAddPlaylistAsync(string username, Playlist playlist)
     {
         var client = RestClientFactory.CreateRestClient(HostUrl);
@@ -80,14 +81,14 @@ public class YandexMusicClient : IYandexMusicClient
             var response = await client.PostAsync(request);
             return response.StatusCode == HttpStatusCode.OK
                 ? JsonSerializer.Deserialize<Playlist>(response.Content!).AsResult()!
-                :  Result.Fail<Playlist>(response.ErrorMessage!);
+                : Result.Fail<Playlist>(response.ErrorMessage!);
         }
-        catch(HttpRequestException e)
+        catch (HttpRequestException e)
         {
             return Result.Fail<Playlist>(e.Message);
         }
     }
-    
+
     public async Task<Result<Playlist>> GetPlaylistByIdAsync(string username, long id)
     {
         var client = RestClientFactory.CreateRestClient(HostUrl);
@@ -100,6 +101,44 @@ public class YandexMusicClient : IYandexMusicClient
             return response.StatusCode == HttpStatusCode.OK
                 ? JsonSerializer.Deserialize<Playlist>(response.Content!).AsResult()!
                 : Result.Fail<Playlist>($"Failed to find playlist {id} for user {username}");
+        }
+        catch (HttpRequestException e)
+        {
+            return Result.Fail<Playlist>(e.Message);
+        }
+    }
+
+    public async Task<Result<Playlist>> SmartUpdatePlaylistAsync(SmartPlaylistUpdateModel updateModel)
+    {
+        var client = RestClientFactory.CreateRestClient(HostUrl);
+        var request = new RestRequest($"{YandexBaseUrl}/playlist/smart-update");
+        request.AddJsonBody(updateModel);
+        try
+        {
+            var response = await client.PostAsync(request);
+            return response.StatusCode == HttpStatusCode.OK
+                ? JsonSerializer.Deserialize<Playlist>(response.Content!).AsResult()!
+                : Result.Fail<Playlist>(
+                    $"Failed to update playlist {updateModel.PlaylistId} for user {updateModel.Username}");
+        }
+        catch (HttpRequestException e)
+        {
+            return Result.Fail<Playlist>(e.Message);
+        }
+    }
+
+    public async Task<Result<Playlist>> UpdatePlaylistAsync(PlaylistUpdateModel updateModel)
+    {
+        var client = RestClientFactory.CreateRestClient(HostUrl);
+        var request = new RestRequest($"{YandexBaseUrl}/playlist/update");
+        request.AddJsonBody(updateModel);
+        try
+        {
+            var response = await client.PostAsync(request);
+            return response.StatusCode == HttpStatusCode.OK
+                ? JsonSerializer.Deserialize<Playlist>(response.Content!).AsResult()!
+                : Result.Fail<Playlist>(
+                    $"Failed to update playlist {updateModel.PlaylistId} for user {updateModel.Username}");
         }
         catch (HttpRequestException e)
         {

@@ -26,10 +26,7 @@ public class VkMusicClient : IVkMusicClient
         var request = new RestRequest($"{VkBaseUrl}/own/playlists");
         request.AddQueryParameter("username", username);
         var response = await client.ExecuteGetAsync(request);
-        if (response.StatusCode == HttpStatusCode.Unauthorized)
-        {
-            return Result.Fail<Playlist[]>("Auth fail");
-        }
+        if (response.StatusCode == HttpStatusCode.Unauthorized) return Result.Fail<Playlist[]>("Auth fail");
         var playlists = JsonSerializer.Deserialize<Playlist[]>(response.Content!) ?? Array.Empty<Playlist>();
         return playlists.AsResult();
     }
@@ -68,7 +65,7 @@ public class VkMusicClient : IVkMusicClient
             return Result.Fail<AccountInfoModel>(e.Message);
         }
     }
-    
+
     public async Task<Result<Playlist>> TryAddPlaylistAsync(string username, Playlist playlist)
     {
         var client = RestClientFactory.CreateRestClient(HostUrl);
@@ -79,15 +76,15 @@ public class VkMusicClient : IVkMusicClient
             var response = await client.PostAsync(request);
             return response.StatusCode == HttpStatusCode.OK
                 ? JsonSerializer.Deserialize<Playlist>(response.Content!).AsResult()!
-                :  Result.Fail<Playlist>(response.ErrorMessage!);
+                : Result.Fail<Playlist>(response.ErrorMessage!);
         }
-        catch(HttpRequestException e)
+        catch (HttpRequestException e)
         {
             return Result.Fail<Playlist>(e.Message);
         }
     }
 
-    
+
     public async Task<Result<Playlist>> GetPlaylistByIdAsync(string username, long id)
     {
         var client = RestClientFactory.CreateRestClient(HostUrl);
@@ -100,6 +97,46 @@ public class VkMusicClient : IVkMusicClient
             return response.StatusCode == HttpStatusCode.OK
                 ? JsonSerializer.Deserialize<Playlist>(response.Content!).AsResult()!
                 : Result.Fail<Playlist>(response.ErrorMessage!);
+        }
+        catch (HttpRequestException e)
+        {
+            return Result.Fail<Playlist>(e.Message);
+        }
+    }
+
+    public async Task<Result<Playlist>> SmartUpdatePlaylistAsync(SmartPlaylistUpdateModel updateModel)
+    {
+        var client = RestClientFactory.CreateRestClient(HostUrl);
+        var request = new RestRequest($"{VkBaseUrl}/playlist/smart-update");
+        request.AddJsonBody(updateModel);
+        try
+        {
+            var response = await client.PostAsync(request);
+            return response.StatusCode == HttpStatusCode.OK
+                ? JsonSerializer.Deserialize<Playlist>(response.Content!).AsResult()!
+                : Result.Fail<Playlist>(
+                    $"Failed to SMART update playlist {updateModel.PlaylistId} for user {updateModel.Username}," +
+                    $" STATUS CODE{response.StatusCode}, {response.Content}");
+        }
+        catch (HttpRequestException e)
+        {
+            return Result.Fail<Playlist>(e.Message);
+        }
+    }
+
+    public async Task<Result<Playlist>> UpdatePlaylistAsync(PlaylistUpdateModel updateModel)
+    {
+        var client = RestClientFactory.CreateRestClient(HostUrl);
+        var request = new RestRequest($"{VkBaseUrl}/playlist/update");
+        request.AddJsonBody(updateModel);
+        try
+        {
+            var response = await client.PostAsync(request);
+            return response.StatusCode == HttpStatusCode.OK
+                ? JsonSerializer.Deserialize<Playlist>(response.Content!).AsResult()!
+                : Result.Fail<Playlist>(
+                    $"Failed to DEFAULT update playlist {updateModel.PlaylistId} for user {updateModel.Username}," +
+                    $" STATUS CODE{response.StatusCode}, {response.Content}");
         }
         catch (HttpRequestException e)
         {

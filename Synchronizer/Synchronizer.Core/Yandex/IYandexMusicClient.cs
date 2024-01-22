@@ -1,6 +1,5 @@
-﻿namespace Synchronizer.Core.Yandex
+﻿namespace Synchronizer.Core.Yandex;
+
+public interface IYandexMusicClient : IMusicClient
 {
-    public interface IYandexMusicClient : IMusicClient
-    {
-    }
 }

@@ -12,7 +12,7 @@ public class YandexClientsRepository
         this.yandexMusicService = yandexMusicService;
     }
 
-    public async Task<YandexMusicClientAsync> GetAuthenticatedYandexApi(string login)
+    public async Task<YandexMusicClientAsync> GetAuthenticatedYandexApiAsync(string login)
     {
         var api = YandexApiFactory.CreateApiClient();
         return await yandexMusicService.AuthAsync(api, login);

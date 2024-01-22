@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using Synchronizer.Core;
 using Synchronizer.Core.VK;
 using Synchronizer.Core.Yandex;
-using Synchronizer.Models.Contracts.VK;
 using Synchronizer.WebApp.Extensions;
 using Synchronizer.WebApp.Helpers;
+using Synchronizer.WebApp.Models;
 using Synchronizer.WebApp.Models.Synchronizer.Playlists;
 using Synchronizer.WebApp.Services;
 
@@ -15,9 +15,9 @@ namespace Synchronizer.WebApp.Controllers;
 public class SynchronizerController : Controller
 {
     private readonly ILogger<SynchronizerController> logger;
+    private readonly SynchronizerClient synchronizerClient;
     private readonly VkMusicClient vkMusicClient;
     private readonly YandexMusicClient yandexMusicClient;
-    private readonly SynchronizerClient synchronizerClient;
 
     public SynchronizerController(
         VkMusicClient vkMusicClient,
@@ -39,15 +39,15 @@ public class SynchronizerController : Controller
         {
             logger.LogInformation("Sync Playlists Found");
             var model = new SynchronizedPlaylistsModel
-                { 
-                    Playlists = playlistsResult.Value
+            {
+                Playlists = playlistsResult.Value
                     .Select(x => x.FromServiceModel())
-                    .ToArray() 
-                };
+                    .ToArray()
+            };
 
             return View(model);
         }
-       
+
         var synchronizedPlaylistsModel = new SynchronizedPlaylistsModel
         {
             Playlists = new[]
@@ -84,15 +84,23 @@ public class SynchronizerController : Controller
         var playlistsResult = await client.GetUsersOwnPlaylistsAsync(username);
         if (!playlistsResult.IsSuccess)
         {
-            var form = musicService == MusicServiceTypeModel.VkMusic 
-                ? "VkAccountForm" 
+            var form = musicService == MusicServiceTypeModel.VkMusic
+                ? "VkAccountForm"
                 : "YandexAccountForm";
             return RedirectToAction(form, "LinkedAccounts");
         }
 
-        return View((playlistsResult.Value, musicService));
+        var syncPlaylists = await synchronizerClient.GetSynchronizedPlaylists(username);
+        var playlistWithSyncFlag = playlistsResult.Value.Select(x => new OwnPlaylistsViewModel
+        {
+            Playlist = x,
+            IsSynchronized = syncPlaylists.Value.Any(p =>
+                p.Playlist.Id == x.Id && p.ServiceType.ToMusicServiceType() == musicService)
+        });
+
+        return View((playlistWithSyncFlag.ToArray(), musicService));
     }
-    
+
     [HttpPost] //Todo: сделать страницу с синхронизованным плейлистом
     public async Task<IActionResult> SynchronizePlaylist(long playlistId, MusicServiceTypeModel musicService)
     {
@@ -101,6 +109,19 @@ public class SynchronizerController : Controller
             playlistId,
             musicService.ToMusicServiceType());
 
-        return RedirectToAction("Index", "Home");
+        return RedirectToAction("SynchronizedPlaylists");
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> UpdateSynchronizedPlaylist(long playlistId, MusicServiceTypeModel musicService)
+    {
+        logger.LogInformation("starting update for playlist: {PlaylistId}, service {MusicService}", playlistId,
+            musicService);
+        var playlistsResult = await synchronizerClient.UpdatePlaylist(
+            HttpContext.GetUsername(),
+            playlistId,
+            musicService.ToMusicServiceType());
+
+        return RedirectToAction("SynchronizedPlaylists");
     }
 }

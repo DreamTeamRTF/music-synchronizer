@@ -11,8 +11,8 @@ public static class DalConfigure
     {
         collection.AddDbContext<SynchronizerDbContext>(options => options
             .UseNpgsql(dbConnection, b => b.MigrationsAssembly(assemblyName)));
-        collection.AddTransient<IUserRepository, UserRepository>(); 
-        collection.AddTransient<SynchronizedPlaylistsRepository>(); 
+        collection.AddTransient<IUserRepository, UserRepository>();
+        collection.AddTransient<SynchronizedPlaylistsRepository>();
         return collection;
     }
 }

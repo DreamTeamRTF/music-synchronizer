@@ -6,4 +6,5 @@ public class SynchronizedPlaylistLink : BaseEntity<Guid>
     public long YandexPlaylistId { get; set; }
     public long VkPlaylistId { get; set; }
     public MusicServiceType MainMusicService { get; set; }
+    public List<SyncTrack> Tracks { get; set; } = new();
 }

@@ -13,7 +13,10 @@ namespace Synchronizer.WebApp.Services;
 public class SynchronizerClient
 {
     private const string SyncUrl = "sync";
-    private static readonly string HostUrl = Environment.GetEnvironmentVariable("synchronizerServiceUrl") ?? "http://localhost";
+
+    private static readonly string HostUrl =
+        Environment.GetEnvironmentVariable("synchronizerServiceUrl") ?? "http://localhost";
+
     private readonly ILogger<SynchronizerClient> logger;
 
     public SynchronizerClient(ILogger<SynchronizerClient> logger)
@@ -25,29 +28,42 @@ public class SynchronizerClient
     {
         var client = RestClientFactory.CreateRestClient(HostUrl);
         var request = new RestRequest($"{SyncUrl}/playlist");
-        request.AddJsonBody(new PlaylistToSyncDto { Username = username, PlaylistId = playlistId, MusicService = serviceType});
+        request.AddJsonBody(new PlaylistToSyncDto
+            { Username = username, PlaylistId = playlistId, MusicService = serviceType });
         var response = await client.ExecutePostAsync(request);
-        logger.LogInformation("Status code of sync: {ResponseStatusCode}, {Content}", response.StatusCode, response.Content);
-        if (response.StatusCode == HttpStatusCode.Unauthorized)
-        {
-            return Result.Fail<Playlist>("Auth fail");
-        }
+        logger.LogInformation("Status code of sync: {ResponseStatusCode}, {Content}", response.StatusCode,
+            response.Content);
+        if (response.StatusCode == HttpStatusCode.Unauthorized) return Result.Fail<Playlist>("Auth fail");
 
         var model = JsonSerializer.Deserialize<Playlist>(response.Content!);
         return model ?? Result.Fail<Playlist>("Deserialization fail");
     }
-    
+
+    public async Task<Result<Playlist>> UpdatePlaylist(string username, long playlistId, MusicServiceType serviceType)
+    {
+        var client = RestClientFactory.CreateRestClient(HostUrl);
+        var request = new RestRequest($"{SyncUrl}/playlists/update");
+        request.AddJsonBody(new PlaylistToSyncDto
+            { Username = username, PlaylistId = playlistId, MusicService = serviceType });
+        var response = await client.ExecutePostAsync(request);
+        logger.LogInformation("Status code of sync: {ResponseStatusCode}, {Content}", response.StatusCode,
+            response.Content);
+        if (response.StatusCode == HttpStatusCode.Unauthorized) return Result.Fail<Playlist>("Auth fail");
+
+        var model = JsonSerializer.Deserialize<Playlist>(response.Content!);
+        return model ?? Result.Fail<Playlist>("Deserialization fail");
+    }
+
     public async Task<Result<PlaylistWithServiceType[]>> GetSynchronizedPlaylists(string username)
     {
         var client = RestClientFactory.CreateRestClient(HostUrl);
         var request = new RestRequest($"{SyncUrl}/playlists");
         request.AddQueryParameter("username", username);
         var response = await client.ExecuteGetAsync(request);
-        logger.LogInformation("Status code of sync: {ResponseStatusCode}, {Content}", response.StatusCode, response.Content);
+        logger.LogInformation("Status code of sync: {ResponseStatusCode}, {Content}", response.StatusCode,
+            response.Content);
         if (response.StatusCode == HttpStatusCode.Unauthorized)
-        {
             return Result.Fail<PlaylistWithServiceType[]>("Auth fail");
-        }
 
         var model = JsonSerializer.Deserialize<PlaylistWithServiceType[]>(response.Content!);
         return model ?? Result.Fail<PlaylistWithServiceType[]>("Deserialization fail");

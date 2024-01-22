@@ -25,7 +25,7 @@ public class YandexMusicService : IMusicService
         var playlists = await apiClient.GetOwnPlaylistsAsync(request.Username);
         return playlists.Select(p => p.FromYandexModel()).ToArray();
     }
-    
+
     public async Task<Playlist> AddPlaylistAsync(PlaylistToAddRequest request)
     {
         var playlist = await apiClient.SavePlaylistAsync(request.Username, request.Playlist);
@@ -36,5 +36,18 @@ public class YandexMusicService : IMusicService
     {
         var playlist = await apiClient.FindByIdAsync(request.Username, request.PlaylistId);
         return playlist?.FromYandexModel();
+    }
+
+    public async Task<Playlist?> SmartPlaylistUpdateAsync(SmartPlaylistUpdateModel request)
+    {
+        var playlist = await apiClient.SmartUpdatePlaylistAsync(request.Username, request.PlaylistId,
+            request.TracksToAdd, request.TracksToRemove);
+        return playlist?.FromYandexModel();
+    }
+
+    public async Task<Playlist> UpdatePlaylistAsync(PlaylistUpdateModel request)
+    {
+        var playlist = await apiClient.PlaylistUpdateAsync(request.Username, request.PlaylistId, request.Source);
+        return playlist.FromYandexModel();
     }
 }

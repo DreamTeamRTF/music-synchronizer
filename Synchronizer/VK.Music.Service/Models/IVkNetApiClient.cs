@@ -10,4 +10,12 @@ public interface IVkNetApiClient
     public Task<(AudioPlaylist, Audio[])> SavePlaylistAsync(string username, Playlist playlist);
     public Task<AccountInfoModel> GetAccountInfoAsync(string username);
     public Task<(AudioPlaylist, Audio[])> FindByIdAsync(string username, long playlistId);
+
+    public Task<(AudioPlaylist, Audio[])> SmartUpdateAsync(
+        string username,
+        long playlistId,
+        string[]? tracksToAdd,
+        string[]? tracksToRemove);
+
+    public Task<(AudioPlaylist, Audio[])> UpdateAsync(string username, long playlistId, Playlist source);
 }

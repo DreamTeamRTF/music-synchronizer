@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Synchronizer.DAL;
@@ -11,9 +12,11 @@ using Synchronizer.DAL;
 namespace Synchronizer.WebApp.Migrations
 {
     [DbContext(typeof(SynchronizerDbContext))]
-    partial class SynchronizerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240121100621_SyncTracks")]
+    partial class SyncTracks
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,7 +50,7 @@ namespace Synchronizer.WebApp.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<Guid>("LinkId")
+                    b.Property<Guid?>("SynchronizedPlaylistLinkId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Title")
@@ -56,7 +59,7 @@ namespace Synchronizer.WebApp.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("LinkId");
+                    b.HasIndex("SynchronizedPlaylistLinkId");
 
                     b.ToTable("SyncTracks");
                 });
@@ -117,13 +120,9 @@ namespace Synchronizer.WebApp.Migrations
 
             modelBuilder.Entity("Synchronizer.DAL.Entities.SyncTrack", b =>
                 {
-                    b.HasOne("Synchronizer.DAL.Entities.SynchronizedPlaylistLink", "Link")
+                    b.HasOne("Synchronizer.DAL.Entities.SynchronizedPlaylistLink", null)
                         .WithMany("Tracks")
-                        .HasForeignKey("LinkId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Link");
+                        .HasForeignKey("SynchronizedPlaylistLinkId");
                 });
 
             modelBuilder.Entity("Synchronizer.DAL.Entities.User", b =>

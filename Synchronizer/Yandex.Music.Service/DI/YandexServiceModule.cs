@@ -27,7 +27,8 @@ public class YandexServiceModule : Module
             .As<YandexServiceConfig>()
             .SingleInstance();
 
-        containerBuilder.Register(cc => new InMemoryYandexMusicAuthService(cc.Resolve<ILogger<InMemoryYandexMusicAuthService>>()))
+        containerBuilder.Register(cc =>
+                new InMemoryYandexMusicAuthService(cc.Resolve<ILogger<InMemoryYandexMusicAuthService>>()))
             .As<InMemoryYandexMusicAuthService>()
             .SingleInstance();
 
@@ -37,7 +38,8 @@ public class YandexServiceModule : Module
             .SingleInstance();
 
         containerBuilder.Register(cc => new YandexApiClient(
-                cc.Resolve<YandexClientsRepository>()))
+                cc.Resolve<YandexClientsRepository>(),
+                cc.Resolve<ILogger<YandexApiClient>>()))
             .As<YandexApiClient>()
             .SingleInstance();
 

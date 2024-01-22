@@ -4,8 +4,8 @@ namespace Synchronizer.Core.Helpers;
 
 public static class RestClientFactory
 {
-    public static RestClient CreateRestClient(string url) => new(url, op =>
+    public static RestClient CreateRestClient(string url)
     {
-        op.ThrowOnAnyError = false;
-    });
+        return new RestClient(url, op => { op.ThrowOnAnyError = false; });
+    }
 }
