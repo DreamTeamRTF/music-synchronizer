@@ -29,14 +29,14 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown"
                        aria-expanded="false">
-                        Синхронизированные учетки
+                        Учетные записи
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                         <li>
-                            <a class="dropdown-item" asp-controller="LinkedAccounts" asp-action="YandexAccount">Yandex.Music</a>
+                            <a class="dropdown-item" asp-controller="LinkedAccounts" asp-action="YandexAccount">Яндекс Музыка</a>
                         </li>
                         <li>
-                            <a class="dropdown-item" asp-controller="LinkedAccounts" asp-action="VkMusicAccount">Vk.Music</a>
+                            <a class="dropdown-item" asp-controller="LinkedAccounts" asp-action="VkMusicAccount">ВК Музыка</a>
                         </li>
                     </ul>
                 </li>
@@ -50,10 +50,10 @@
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                         <li>
-                            <a class="dropdown-item" asp-controller="Synchronizer" asp-action="OwnPlaylists" asp-route-musicService="YandexMusic">Из Yandex</a>
+                            <a class="dropdown-item" asp-controller="Synchronizer" asp-action="OwnPlaylists" asp-route-musicService="YandexMusic">Из YandexMusic</a>
                         </li>
                         <li>
-                            <a class="dropdown-item" asp-controller="Synchronizer" asp-action="OwnPlaylists" asp-route-musicService="VkMusic">Из Vk.Music</a>
+                            <a class="dropdown-item" asp-controller="Synchronizer" asp-action="OwnPlaylists" asp-route-musicService="VkMusic">Из VkMusic</a>
                         </li>
                     </ul>
                 </li>
