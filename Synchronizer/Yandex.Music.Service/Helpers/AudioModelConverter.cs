@@ -34,13 +34,13 @@ public static class AudioModelConverter
     private static string GetProperImageUrl(this string uri)
     {
         var n = uri.Length;
-        return $@"https:\\{uri[..(n - 2)].Replace("%%", "/m200x200")}";
+        return $@"https://{uri[..(n - 2)].Replace("%%", "m200x200")}";
     }
 
     private static string GetMosaicImageUrl(this string uri)
     {
         var n = uri.Length;
-        return $@"https:\\{uri.Substring(0, n - 2)}200x200";
+        return $@"https://{uri.Substring(0, n - 2)}200x200";
     }
 
     public static Track FromYandexModel(this YTrack yTrack)
