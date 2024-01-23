@@ -10,11 +10,11 @@ namespace Yandex.Music.Service.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly YandexAccountService accountService;
-    private readonly InMemoryYandexMusicAuthService authService;
+    private readonly RepositoryYandexMusicAuthService authService;
     private readonly ILogger<AuthController> logger;
 
     public AuthController(
-        InMemoryYandexMusicAuthService authService,
+        RepositoryYandexMusicAuthService authService,
         YandexAccountService accountService,
         ILogger<AuthController> logger)
     {
@@ -28,14 +28,6 @@ public class AuthController : ControllerBase
     public async Task<ActionResult> Auth([FromBody] LoginModel loginModel)
     {
         await authService.CreateAuthSessionAsync(loginModel.Username, loginModel.Login, loginModel.Password);
-        return Ok();
-    }
-
-    [HttpPost]
-    [Route("yandex/music/auth/token")]
-    public async Task<ActionResult> Auth([FromBody] TokenLoginModel loginModel)
-    {
-        await authService.CreateAuthWithTokenAsync(loginModel.Username, loginModel.Token);
         return Ok();
     }
 

@@ -2,7 +2,7 @@
 
 namespace Synchronizer.WebApp.Models;
 
-public class OwnPlaylistsViewModel
+public class OwnPlaylistViewModel
 {
     public Playlist Playlist { get; set; }
     public bool IsSynchronized { get; set; }

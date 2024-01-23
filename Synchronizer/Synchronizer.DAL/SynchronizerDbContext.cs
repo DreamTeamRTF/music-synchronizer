@@ -13,6 +13,8 @@ public class SynchronizerDbContext : DbContext
     public DbSet<SyncTrack> SyncTracks { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<Role> Roles { get; set; }
+    public DbSet<YandexLink> YandexLinks { get; set; }
+    public DbSet<VkLink> VkLinks { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using MusicServices.Models.Contracts;
+using Synchronizer.DAL.Repositories;
 using VK.Music.Service.Configuration;
 using VK.Music.Service.Helpers;
 using VK.Music.Service.Models;
@@ -45,10 +46,11 @@ public class VkServiceModule : Module
             .As<VkApiFactory>()
             .SingleInstance();
 
-        containerBuilder.Register(cc => new InMemoryVkNetAuthService(
+        containerBuilder.Register(cc => new RepositoryVkNetAuthService(
+                cc.Resolve<VkLinksRepository>(),
                 cc.Resolve<ITwoFactorVkProvider>(),
-                cc.Resolve<VkServiceConfig>(),
-                cc.Resolve<VkApiFactory>()))
+                cc.Resolve<VkApiFactory>(),
+                cc.Resolve<VkServiceConfig>()))
             .As<IVkNetApiAuthService>()
             .SingleInstance();
 

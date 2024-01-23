@@ -29,19 +29,6 @@ public class TestingAuthController : ControllerBase
     }
 
     [HttpPost]
-    [Route("test/vk/music/auth")]
-    public ActionResult TestAuth()
-    {
-        authService.AddTestToken(config.TestLogin, new AuthorizationParameters
-        {
-            Token = config.TestToken,
-            UserId = config.TestUserId
-        });
-
-        return Ok();
-    }
-
-    [HttpPost]
     [Route("test/vk/music/auth/token")]
     public async Task<ActionResult<AuthorizationParameters>> CreateToken(LoginModel loginModel)
     {

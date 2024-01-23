@@ -5,16 +5,16 @@ namespace Yandex.Music.Service.Models;
 
 public class YandexClientsRepository
 {
-    private readonly InMemoryYandexMusicAuthService yandexMusicService;
+    private readonly RepositoryYandexMusicAuthService yandexMusicService;
 
-    public YandexClientsRepository(InMemoryYandexMusicAuthService yandexMusicService)
+    public YandexClientsRepository(RepositoryYandexMusicAuthService yandexMusicService)
     {
         this.yandexMusicService = yandexMusicService;
     }
 
-    public async Task<YandexMusicClientAsync> GetAuthenticatedYandexApiAsync(string login)
+    public async Task<YandexMusicClientAsync> GetAuthenticatedYandexApiAsync(string username)
     {
-        var api = YandexApiFactory.CreateApiClient();
-        return await yandexMusicService.AuthAsync(api, login);
+
+        return await yandexMusicService.AuthAsync(username);
     }
 }

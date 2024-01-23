@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MusicServices.Models;
 using Synchronizer.Core;
 using Synchronizer.Core.VK;
 using Synchronizer.Core.Yandex;
+using Synchronizer.DAL.Repositories;
 using Synchronizer.WebApp.Extensions;
 using Synchronizer.WebApp.Helpers;
 using Synchronizer.WebApp.Models;
@@ -18,20 +20,23 @@ public class SynchronizerController : Controller
     private readonly SynchronizerClient synchronizerClient;
     private readonly VkMusicClient vkMusicClient;
     private readonly YandexMusicClient yandexMusicClient;
+    private readonly PlaylistModelsProvider modelsProvider;
 
     public SynchronizerController(
         VkMusicClient vkMusicClient,
         YandexMusicClient yandexMusicClient,
         ILogger<SynchronizerController> logger,
-        SynchronizerClient synchronizerClient)
+        SynchronizerClient synchronizerClient,
+        PlaylistModelsProvider modelsProvider)
     {
         this.vkMusicClient = vkMusicClient;
         this.yandexMusicClient = yandexMusicClient;
         this.logger = logger;
         this.synchronizerClient = synchronizerClient;
+        this.modelsProvider = modelsProvider;
     }
 
-    [HttpGet] // TODO: Заглушка нужно получать из апишек
+    [HttpGet]
     public async Task<IActionResult> SynchronizedPlaylists()
     {
         var playlistsResult = await synchronizerClient.GetSynchronizedPlaylists(HttpContext.GetUsername());
@@ -90,15 +95,9 @@ public class SynchronizerController : Controller
             return RedirectToAction(form, "LinkedAccounts");
         }
 
-        var syncPlaylists = await synchronizerClient.GetSynchronizedPlaylists(username);
-        var playlistWithSyncFlag = playlistsResult.Value.Select(x => new OwnPlaylistsViewModel
-        {
-            Playlist = x,
-            IsSynchronized = syncPlaylists.Value.Any(p =>
-                p.Playlist.Id == x.Id && p.ServiceType.ToMusicServiceType() == musicService)
-        });
+        var syncPlaylists = modelsProvider.FindSyncPlaylists(username, playlistsResult.Value, musicService);
 
-        return View((playlistWithSyncFlag.ToArray(), musicService));
+        return View((syncPlaylists.ToArray(), musicService));
     }
 
     [HttpPost] //Todo: сделать страницу с синхронизованным плейлистом

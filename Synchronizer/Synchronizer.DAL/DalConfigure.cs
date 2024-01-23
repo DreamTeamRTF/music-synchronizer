@@ -13,6 +13,8 @@ public static class DalConfigure
             .UseNpgsql(dbConnection, b => b.MigrationsAssembly(assemblyName)));
         collection.AddTransient<IUserRepository, UserRepository>();
         collection.AddTransient<SynchronizedPlaylistsRepository>();
+        collection.AddTransient<YandexLinksRepository>();
+        collection.AddTransient<VkLinksRepository>();
         return collection;
     }
 }

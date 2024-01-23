@@ -1,5 +1,7 @@
 ﻿using Autofac;
 using MusicServices.Models.Contracts;
+using Synchronizer.DAL;
+using Synchronizer.DAL.Repositories;
 using Yandex.Music.Service.Configuration;
 using Yandex.Music.Service.Models;
 using Yandex.Music.Service.Models.Account;
@@ -28,12 +30,18 @@ public class YandexServiceModule : Module
             .SingleInstance();
 
         containerBuilder.Register(cc =>
+                new RepositoryYandexMusicAuthService(cc.Resolve<YandexLinksRepository>(),
+                    cc.Resolve<ILogger<RepositoryYandexMusicAuthService>>()))
+            .As<RepositoryYandexMusicAuthService>()
+            .SingleInstance();
+        
+        containerBuilder.Register(cc =>
                 new InMemoryYandexMusicAuthService(cc.Resolve<ILogger<InMemoryYandexMusicAuthService>>()))
             .As<InMemoryYandexMusicAuthService>()
             .SingleInstance();
 
         containerBuilder.Register(cc => new YandexClientsRepository(
-                cc.Resolve<InMemoryYandexMusicAuthService>()))
+                cc.Resolve<RepositoryYandexMusicAuthService>()))
             .As<YandexClientsRepository>()
             .SingleInstance();
 

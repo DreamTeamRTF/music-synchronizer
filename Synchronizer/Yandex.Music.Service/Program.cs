@@ -1,5 +1,6 @@
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using Synchronizer.DAL;
 using Yandex.Music.Service.Configuration;
 using Yandex.Music.Service.DI;
 
@@ -8,6 +9,9 @@ builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
 builder.Services.AddLogging(b => b.AddConsole());
 builder.Services.AddControllers();
 builder.Services.AddSwaggerGen();
+
+var dbConnection = builder.Configuration.GetConnectionString("Postgres")!;
+builder.Services.AddDataAccessLayer(dbConnection, typeof(SynchronizerDbContext).Assembly.ToString());
 
 var config = new YandexServiceConfig
 {

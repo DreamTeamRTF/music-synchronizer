@@ -1,5 +1,6 @@
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using Synchronizer.DAL;
 using VK.Music.Service.Configuration;
 using VK.Music.Service.DI;
 using VkNet.AudioBypassService.Extensions;
@@ -10,6 +11,9 @@ builder.Services.AddLogging(b => b.AddConsole());
 builder.Services.AddControllers();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAudioBypass();
+
+var dbConnection = builder.Configuration.GetConnectionString("Postgres")!;
+builder.Services.AddDataAccessLayer(dbConnection, typeof(SynchronizerDbContext).Assembly.ToString());
 
 var config = new VkServiceConfig
 {
