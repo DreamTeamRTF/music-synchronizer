@@ -5,20 +5,20 @@
     Layout = "_Layout";
 }
 
-<h2>Плейлисты</h2>
+<h2>Плейлисты @Model.serviceType</h2>
 
 <div class="container">
     <div class="row">
         @foreach (var viewModel in Model.playlists)
         {
-            <div class="card h-100" style="width: 20rem; max-width: 20rem; display: inline-flex; margin: 0.1rem;">
+            <div class="card h-100" style="width: 20rem; max-width: 20rem; min-height:24rem; max-height:24rem; display: inline-flex; margin: 0.1rem;">
                 <!-- Playlist image-->
                 <div class="border border-opacity-10 border-3 align-self-center justify-content-end"
-                     style="height: 14rem; max-height: 14rem; max-width: 14rem; margin: 0.5rem; min-width: 14rem; background-color: #d9d9d98c;">
+                     style="height: 14rem; max-height: 14rem; max-width: 14rem; margin: 0.5rem; min-width: 14rem; min-height:14rem; background-color: #d9d9d98c;">
                     <img class="img-fluid mx-auto d-block" style="height: 100%" src="@viewModel.Playlist.ImageUrl" alt="Картинка плейлиста" />
                 </div>
                 <!-- Playlist details-->
-                <div class="card-body p-4">
+                <div class="card-body p-3 align-content-center" style="max-height: 5rem;">
                     <div class="text-center">
                         <!-- Playlist name-->
                         <h5 class="fw-bolder">@viewModel.Playlist.Title</h5>
@@ -29,7 +29,7 @@
                     <div class="text-center">
                         @if (viewModel.IsSynchronized)
                         {
-                            <button class="rounded-pill" style="background-color: #b7c7e987;">Уже синхронизирован</button>
+                            <button class="rounded-pill" style="background-color: #b3ffb187;">Уже синхронизирован</button>
                         }
                         else
                         {
